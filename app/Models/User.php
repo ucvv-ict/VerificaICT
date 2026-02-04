@@ -48,6 +48,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_enabled' => 'boolean',
+            'force_password_change' => 'boolean',
         ];
     }
 
@@ -61,6 +62,16 @@ class User extends Authenticatable
     public function hasTwoFactorEnabled(): bool
     {
         return (bool) $this->two_factor_enabled;
+    }
+
+    public function mustChangePassword(): bool
+    {
+        return (bool) $this->force_password_change;
+    }
+
+    public function hasConfiguredTwoFactor(): bool
+    {
+        return $this->hasTwoFactorEnabled() && ($this->getTwoFactorSecretDecrypted() !== null);
     }
 
     public function getTwoFactorSecretDecrypted(): ?string

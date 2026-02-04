@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Widgets\CriticalSecurityTasksWidget;
 use App\Filament\Widgets\SecurityOverviewWidget;
+use App\Http\Middleware\ForcePasswordChange;
 use App\Http\Middleware\ForceTwoFactorSetup;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -59,6 +60,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                ForcePasswordChange::class,
                 ForceTwoFactorSetup::class,
             ]);
     }

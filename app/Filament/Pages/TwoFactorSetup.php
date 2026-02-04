@@ -39,7 +39,7 @@ class TwoFactorSetup extends Page
             return;
         }
 
-        if ($user->hasTwoFactorEnabled()) {
+        if ($user->hasConfiguredTwoFactor()) {
             if ((bool) session()->get(ForceTwoFactorSetup::SESSION_KEY, false)) {
                 $this->redirect(Dashboard::getUrl(panel: Filament::getCurrentPanel()?->getId()));
 

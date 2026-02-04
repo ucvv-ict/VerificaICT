@@ -34,7 +34,7 @@ class TwoFactorChallenge extends Page
             return;
         }
 
-        if (! $user->hasTwoFactorEnabled()) {
+        if (! $user->hasConfiguredTwoFactor()) {
             $this->redirect(TwoFactorSetup::getUrl(panel: Filament::getCurrentPanel()?->getId()));
 
             return;

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Middleware;
 
 use App\Filament\Pages\TwoFactorChallenge;
+use App\Filament\Pages\FirstLoginPasswordChange;
 use App\Filament\Pages\TwoFactorSetup;
 use App\Models\User;
 use Closure;
@@ -31,8 +32,20 @@ class ForceTwoFactorSetup
 
         $setupRouteName = TwoFactorSetup::getRouteName($panel);
         $challengeRouteName = TwoFactorChallenge::getRouteName($panel);
+        $changePasswordRouteName = FirstLoginPasswordChange::getRouteName($panel);
+        $logoutRouteName = $panel?->generateRouteName('auth.logout');
 
-        if (! $user->two_factor_enabled) {
+        // Consenti sempre il logout, anche prima del completamento 2FA.
+        if (($logoutRouteName !== null) && $request->routeIs($logoutRouteName)) {
+            return $next($request);
+        }
+
+        // Consenti sempre la pagina cambio password: è gestita da middleware dedicato.
+        if ($request->routeIs($changePasswordRouteName)) {
+            return $next($request);
+        }
+
+        if (! $user->hasConfiguredTwoFactor()) {
             if ($request->routeIs($setupRouteName)) {
                 return $next($request);
             }

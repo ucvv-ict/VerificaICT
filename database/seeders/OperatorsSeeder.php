@@ -40,8 +40,12 @@ class OperatorsSeeder extends Seeder
                 ],
             );
 
-            // 2FA obbligatorio: abilita il flag senza generare secret TOTP.
-            $user->forceFill(['two_factor_enabled' => true])->save();
+            // Primo accesso: forziamo cambio password e setup 2FA.
+            $user->forceFill([
+                'force_password_change' => true,
+                'two_factor_enabled' => false,
+                'two_factor_secret' => null,
+            ])->save();
 
             // Non rimuove associazioni esistenti; aggiunge quelle mancanti.
             if ($entityPivotData !== []) {
