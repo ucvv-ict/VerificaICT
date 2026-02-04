@@ -1,5 +1,7 @@
 <?php
 
+use App\Console\Kernel as AppConsoleKernel;
+use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,6 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         //
     })
+    ->withSingletons([
+        ConsoleKernelContract::class => AppConsoleKernel::class,
+    ])
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

@@ -1,0 +1,23 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Filament\Resources\EntityResource\Pages;
+
+use App\Filament\Resources\EntityResource;
+use App\Models\Entity;
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
+
+class EditEntity extends EditRecord
+{
+    protected static string $resource = EntityResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make()
+                ->visible(fn (Entity $record): bool => EntityResource::canDelete($record)),
+        ];
+    }
+}
