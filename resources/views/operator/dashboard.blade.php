@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.operator')
 
 @section('content')
 <div class="max-w-4xl mx-auto p-4">
