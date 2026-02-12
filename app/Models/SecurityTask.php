@@ -50,9 +50,9 @@ class SecurityTask extends Model
         ];
     }
 
-    public function tags(): BelongsToMany
+    public function tags()
     {
-        return $this->belongsToMany(Tag::class, 'security_task_tag');
+        return $this->belongsToMany(Tag::class);
     }
 
     public function entitySecurityTasks(): HasMany
