@@ -27,4 +27,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::post('/assegnazioni-massive', [AdminBulkAssignmentController::class, 'store'])
         ->name('admin.bulk.store');
 
+        Route::post('/assegnazioni-massive/preview',
+        [AdminBulkAssignmentController::class, 'preview']
+            )->name('admin.bulk.preview');
+
 });

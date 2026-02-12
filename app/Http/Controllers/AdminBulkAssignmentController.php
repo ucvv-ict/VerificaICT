@@ -18,6 +18,55 @@ class AdminBulkAssignmentController extends Controller
         return view('admin.bulk.index', compact('entities', 'tags'));
     }
 
+    public function preview(Request $request)
+    {
+        $mode = $request->input('mode');
+        $entities = $request->input('entities', []);
+
+        if (!$entities) {
+            return response()->json(['error' => 'Seleziona almeno un ente'], 422);
+        }
+
+        $tasks = collect();
+
+        if ($mode === 'tasks') {
+            $tasks = SecurityTask::whereIn('id', $request->input('tasks', []))->get();
+        }
+
+        if ($mode === 'tags') {
+            $tasks = SecurityTask::whereHas('tags', function ($q) use ($request) {
+                $q->whereIn('tags.id', $request->input('tags', []));
+            })->get();
+        }
+
+        if ($mode === 'package') {
+            $tasks = SecurityTask::whereHas('tags', function ($q) {
+                $q->where('nome', 'base');
+            })->get();
+        }
+
+        $new = 0;
+        $existing = 0;
+
+        foreach ($entities as $entityId) {
+            foreach ($tasks as $task) {
+
+                $exists = EntitySecurityTask::where('entity_id', $entityId)
+                    ->where('security_task_id', $task->id)
+                    ->exists();
+
+                $exists ? $existing++ : $new++;
+            }
+        }
+
+        return response()->json([
+            'tasks_count' => $tasks->count(),
+            'entities_count' => count($entities),
+            'new' => $new,
+            'existing' => $existing,
+        ]);
+    }
+
     public function store(Request $request)
     {
         $mode = $request->input('mode');

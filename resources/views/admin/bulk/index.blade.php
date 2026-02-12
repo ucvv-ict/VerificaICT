@@ -6,16 +6,6 @@
     Assegnazione Massiva Task
 </h1>
 
-<div class="mb-6">
-    <label class="font-semibold block mb-2">Modalità Assegnazione</label>
-
-    <select id="mode-select" name="mode" class="border rounded p-2 w-full">
-        <option value="tasks">Task specifici</option>
-        <option value="tags">Per Tag</option>
-        <option value="package">Pacchetto Base</option>
-    </select>
-</div>
-
 @if(session('success'))
     <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
         {{ session('success') }}
@@ -24,6 +14,14 @@
 
 <form method="POST" action="{{ route('admin.bulk.store') }}" class="space-y-6">
     @csrf
+    <div class="mb-6">
+        <label class="font-semibold block mb-2">Modalità Assegnazione</label>
+        <select id="mode-select" name="mode" class="border rounded p-2 w-full">
+            <option value="tasks">Task specifici</option>
+            <option value="tags">Per Tag</option>
+            <option value="package">Pacchetto Base</option>
+        </select>
+    </div>
 
     <div>
         <h2 class="font-semibold mb-2">Seleziona Enti</h2>
@@ -66,9 +64,15 @@
         Applica assegnazione
     </button>
 
+    <button type="button"
+            id="preview-btn"
+            class="bg-gray-700 text-white px-6 py-2 rounded font-semibold">
+        Preview
+    </button>
 </form>
 
-@endsection
+<div id="preview-result" class="mt-4 hidden bg-gray-100 p-4 rounded"></div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -113,3 +117,38 @@ document.addEventListener('DOMContentLoaded', function () {
     updateVisibility();
 });
 </script>
+<script>
+document.getElementById('preview-btn').addEventListener('click', function () {
+
+    const form = document.querySelector('form');
+    const formData = new FormData(form);
+
+    fetch("{{ route('admin.bulk.preview') }}", {
+        method: "POST",
+        headers: {
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        },
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        const box = document.getElementById('preview-result');
+
+        if (data.error) {
+            box.innerHTML = `<div class="text-red-600">${data.error}</div>`;
+        } else {
+            box.innerHTML = `
+                <strong>Preview Assegnazione</strong><br>
+                Task coinvolti: ${data.tasks_count}<br>
+                Enti selezionati: ${data.entities_count}<br>
+                Nuove assegnazioni: ${data.new}<br>
+                Già esistenti: ${data.existing}
+            `;
+        }
+
+        box.classList.remove('hidden');
+    });
+});
+</script>
+@endsection
