@@ -8,6 +8,18 @@ Il progetto segue (in modo leggero) il versioning semantico:
 - PATCH: fix e miglioramenti minori
 
 ---
+## v0.5.0 - Admin Audit Log
+
+### Added
+- Administrative audit log table
+- Logging of bulk and sync assignments
+- Audit log view with pagination
+- Filtering by action and user
+
+### Improved
+- Governance traceability
+- Administrative accountability
+
 ## v0.4.0 - Admin Global Dashboard
 
 ### Added
