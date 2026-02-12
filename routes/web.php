@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminBulkAssignmentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -15,4 +16,15 @@ Route::middleware(['auth'])->prefix('operatore')->group(function () {
 
     Route::post('/check/{entitySecurityTask}', [\App\Http\Controllers\OperatorCheckController::class, 'store'])
         ->name('operator.check.store');
+});
+
+
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+
+    Route::get('/assegnazioni-massive', [AdminBulkAssignmentController::class, 'index'])
+        ->name('admin.bulk.index');
+
+    Route::post('/assegnazioni-massive', [AdminBulkAssignmentController::class, 'store'])
+        ->name('admin.bulk.store');
+
 });
