@@ -31,11 +31,48 @@
         </div>
     @endif
 
-    <div class="mt-3">
+    {{-- Pulsanti --}}
+    <div class="mt-4 flex flex-wrap gap-2">
+
+        {{-- Quick OK --}}
+        <form method="POST"
+              action="{{ route('operator.quick-check', $task->id) }}">
+            @csrf
+            <input type="hidden" name="esito" value="ok">
+            <button type="submit"
+                    class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs">
+                OK
+            </button>
+        </form>
+
+        {{-- Quick KO --}}
+        <form method="POST"
+              action="{{ route('operator.quick-check', $task->id) }}">
+            @csrf
+            <input type="hidden" name="esito" value="ko">
+            <button type="submit"
+                    class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs">
+                KO
+            </button>
+        </form>
+
+        {{-- Quick NA --}}
+        <form method="POST"
+              action="{{ route('operator.quick-check', $task->id) }}">
+            @csrf
+            <input type="hidden" name="esito" value="na">
+            <button type="submit"
+                    class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-xs">
+                NA
+            </button>
+        </form>
+
+        {{-- Bottone classico --}}
         <a href="{{ route('operator.check.show', $task->id) }}"
-           class="inline-block bg-blue-600 text-white px-4 py-2 rounded text-sm">
-            Esegui controllo
+           class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs">
+            Dettaglio
         </a>
+
     </div>
 
 </div>
