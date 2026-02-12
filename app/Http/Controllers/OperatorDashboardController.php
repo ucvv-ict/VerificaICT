@@ -13,13 +13,22 @@ class OperatorDashboardController extends Controller
         $entityIds = $user->entities()->pluck('entities.id');
 
         $tasks = EntitySecurityTask::with([
-                'entity',
-                'securityTask',
-                'latestCheck'
+        'entity',
+        'securityTask',
+        'latestCheck.user'
             ])
             ->whereIn('entity_id', $entityIds)
             ->where('attiva', true)
-            ->get();
+            ->get()
+            ->sortByDesc(function ($task) {
+                return match ($task->current_status) {
+                    'rosso' => 3,
+                    'arancione' => 2,
+                    'verde' => 1,
+                    default => 0,
+                };
+            });
+
 
         return view('operator.dashboard', compact('tasks'));
     }

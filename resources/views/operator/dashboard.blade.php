@@ -33,11 +33,11 @@
                 </span>
             </div>
 
-            @if($task->lastCheck)
+            @if($task->latestCheck)
                 <div class="text-sm text-gray-600">
                     Ultimo controllo:
-                    {{ $task->lastCheck->checked_at->format('d/m/Y') }}
-                    ({{ strtoupper($task->lastCheck->esito) }})
+                    {{ $task->latestCheck->checked_at->format('d/m/Y') }}
+                    ({{ strtoupper($task->latestCheck->esito) }})
                 </div>
             @else
                 <div class="text-sm text-gray-600">
