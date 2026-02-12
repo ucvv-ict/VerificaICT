@@ -15,5 +15,9 @@ class AdminDashboard extends Page
     protected static ?int $navigationSort = 1;
     protected static ?string $slug = 'dashboard-globale';
 
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Operatività';
+    }
 
 }

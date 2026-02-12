@@ -24,6 +24,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_admin'
     ];
 
     /**
@@ -49,7 +50,13 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_enabled' => 'boolean',
             'force_password_change' => 'boolean',
+            'is_admin' => 'boolean',
         ];
+    }
+
+    public function isAdmin(): bool
+    {
+        return (bool) $this->is_admin;
     }
 
     public function entities(): BelongsToMany
@@ -57,6 +64,11 @@ class User extends Authenticatable
         return $this->belongsToMany(Entity::class, 'entity_user')
             ->withPivot('ruolo')
             ->withTimestamps();
+    }
+
+    public function canAccessPanel(\Filament\Panel $panel): bool
+    {
+        return $this->isAdmin();
     }
 
     public function hasTwoFactorEnabled(): bool

@@ -32,6 +32,15 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->navigationGroups([
+                \Filament\Navigation\NavigationGroup::make()
+                    ->label('Operativita')
+                    ->collapsed(false),
+
+                \Filament\Navigation\NavigationGroup::make()
+                    ->label('Configurazione')
+                    ->collapsed(true),
+            ])
             ->colors([
                 'primary' => Color::Amber,
             ])

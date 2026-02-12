@@ -30,6 +30,12 @@ class EntitySecurityTaskResource extends Resource
     protected static ?string $model = EntitySecurityTask::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
+    protected static ?int $navigationSort = 3;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Operatività';
+    }
 
     public static function form(Schema $schema): Schema
     {
