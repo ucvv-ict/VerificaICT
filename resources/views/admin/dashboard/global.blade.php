@@ -22,7 +22,10 @@
         @foreach($data as $row)
             <tr class="border-t">
                 <td class="p-3 font-semibold">
-                    {{ $row['entity']->nome }}
+                    <a href="{{ route('operator.dashboard') }}?entity={{ $row['entity']->id }}"
+                    class="hover:underline">
+                        {{ $row['entity']->nome }}
+                    </a>
 
                     @if($row['critici'] > 0)
                         <span class="ml-2 px-2 py-1 text-xs bg-red-100 text-red-700 rounded">
