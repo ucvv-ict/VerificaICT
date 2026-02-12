@@ -8,6 +8,19 @@ Il progetto segue (in modo leggero) il versioning semantico:
 - PATCH: fix e miglioramenti minori
 
 ---
+## v0.4.0 - Admin Global Dashboard
+
+### Added
+- Global administrative dashboard aggregated by entity
+- Compliance percentage calculation per entity
+- Visual status badges (Criticità / Attenzione / OK)
+- Compliance progress bar per entity
+- Sorting by number of critical tasks
+
+### Improved
+- Managerial visibility of overall compliance status
+- Governance-level overview of all active entities
+
 ## v0.3.0 - Admin Bulk Assignment
 
 ### Added
