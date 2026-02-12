@@ -8,6 +8,19 @@ Il progetto segue (in modo leggero) il versioning semantico:
 - PATCH: fix e miglioramenti minori
 
 ---
+## v0.6.0 - Operator UX Improvements
+
+### Added
+- Quick action buttons (OK / KO / NA) directly in operator dashboard
+- Tag display inside task cards
+- Responsible user display inside task cards
+
+### Improved
+- Operator dashboard filtering (entity, tag, status)
+- Default view shows only critical and warning tasks
+- Accordion layout by status
+- Reduced visual overload for large task lists
+
 ## v0.5.0 - Admin Audit Log
 
 ### Added

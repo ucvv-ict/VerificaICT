@@ -5,6 +5,62 @@
 <h1 class="text-xl font-bold mb-4">
     Dashboard Operatore
 </h1>
+<form method="GET" class="bg-white p-4 rounded shadow mb-6 flex flex-wrap gap-4 items-end">
+
+    {{-- Ente --}}
+    <div>
+        <label class="block text-xs font-semibold mb-1">Ente</label>
+        <select name="entity" class="border rounded p-2 text-sm">
+            <option value="">Tutti</option>
+            @foreach($entities as $entity)
+                <option value="{{ $entity->id }}"
+                    {{ request('entity') == $entity->id ? 'selected' : '' }}>
+                    {{ $entity->nome }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+    {{-- Tag --}}
+    <div>
+        <label class="block text-xs font-semibold mb-1">Tag</label>
+        <select name="tag" class="border rounded p-2 text-sm">
+            <option value="">Tutti</option>
+            @foreach($tags as $tag)
+                <option value="{{ $tag->id }}"
+                    {{ request('tag') == $tag->id ? 'selected' : '' }}>
+                    {{ $tag->nome }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+    {{-- Stato --}}
+    <div>
+        <label class="block text-xs font-semibold mb-1">Stato</label>
+        <select name="status" class="border rounded p-2 text-sm">
+            <option value="">Tutti</option>
+            <option value="rosso" {{ request('status') == 'rosso' ? 'selected' : '' }}>Critici</option>
+            <option value="arancione" {{ request('status') == 'arancione' ? 'selected' : '' }}>In scadenza</option>
+            <option value="verde" {{ request('status') == 'verde' ? 'selected' : '' }}>Regolari</option>
+        </select>
+    </div>
+
+    <div>
+        <button type="submit"
+                class="bg-blue-600 text-white px-4 py-2 rounded text-sm">
+            Filtra
+        </button>
+    </div>
+
+    <div>
+        <a href="{{ route('operator.dashboard') }}"
+           class="text-sm text-gray-600 underline">
+            Reset
+        </a>
+    </div>
+
+</form>
 
 {{-- CONTATORI --}}
 <div class="grid grid-cols-3 gap-3 mb-6">
@@ -27,36 +83,48 @@
 </div>
 
 {{-- BLOCCO ROSSO --}}
-@if($grouped['rosso']->isNotEmpty())
-    <h2 class="text-lg font-bold text-red-700 mb-3">
-        🔴 Controlli Critici ({{ $counts['rosso'] }})
-    </h2>
+@if($grouped->get('rosso', collect())->isNotEmpty())
+    <details open class="mb-4">
+        <summary class="cursor-pointer text-lg font-bold text-red-700">
+            🔴 Controlli Critici ({{ $counts['rosso'] }})
+        </summary>
 
-    @foreach($grouped['rosso'] as $task)
-        @include('operator.partials.card', ['task' => $task])
-    @endforeach
+        <div class="mt-3">
+            @foreach($grouped->get('rosso', collect()) as $task)
+                @include('operator.partials.card', ['task' => $task])
+            @endforeach
+        </div>
+    </details>
 @endif
 
 {{-- BLOCCO ARANCIONE --}}
-@if($grouped['arancione']->isNotEmpty())
-    <h2 class="text-lg font-bold text-yellow-700 mt-6 mb-3">
-        🟡 In Scadenza ({{ $counts['arancione'] }})
-    </h2>
+@if($grouped->get('arancione', collect())->isNotEmpty())
+    <details class="mb-4">
+        <summary class="cursor-pointer text-lg font-bold text-yellow-700">
+            🟡 In Scadenza ({{ $counts['arancione'] }})
+        </summary>
 
-    @foreach($grouped['arancione'] as $task)
-        @include('operator.partials.card', ['task' => $task])
-    @endforeach
+        <div class="mt-3">
+            @foreach($grouped->get('arancione', collect()) as $task)
+                @include('operator.partials.card', ['task' => $task])
+            @endforeach
+        </div>
+    </details>
 @endif
 
 {{-- BLOCCO VERDE --}}
-@if($grouped['verde']->isNotEmpty())
-    <h2 class="text-lg font-bold text-green-700 mt-6 mb-3">
-        🟢 Regolari ({{ $counts['verde'] }})
-    </h2>
+@if($grouped->get('verde', collect())->isNotEmpty())
+    <details class="mb-4">
+        <summary class="cursor-pointer text-lg font-bold text-green-700">
+            🟢 Regolari ({{ $counts['verde'] }})
+        </summary>
 
-    @foreach($grouped['verde'] as $task)
-        @include('operator.partials.card', ['task' => $task])
-    @endforeach
+        <div class="mt-3">
+            @foreach($grouped->get('verde', collect()) as $task)
+                @include('operator.partials.card', ['task' => $task])
+            @endforeach
+        </div>
+    </details>
 @endif
 
 @endsection
