@@ -37,10 +37,6 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     [AdminBulkAssignmentController::class, 'preview']
         )->name('admin.bulk.preview');
 
-    Route::get('/dashboard-globale',
-        [\App\Http\Controllers\AdminGlobalDashboardController::class, 'index']
-    )->name('admin.dashboard.global');
-
     Route::get('/audit-log',
         [\App\Http\Controllers\AdminAuditLogController::class, 'index']
     )->name('admin.audit.index');
