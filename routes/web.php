@@ -27,8 +27,12 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::post('/assegnazioni-massive', [AdminBulkAssignmentController::class, 'store'])
         ->name('admin.bulk.store');
 
-        Route::post('/assegnazioni-massive/preview',
-        [AdminBulkAssignmentController::class, 'preview']
-            )->name('admin.bulk.preview');
+    Route::post('/assegnazioni-massive/preview',
+    [AdminBulkAssignmentController::class, 'preview']
+        )->name('admin.bulk.preview');
+
+    Route::get('/dashboard-globale',
+        [\App\Http\Controllers\AdminGlobalDashboardController::class, 'index']
+    )->name('admin.dashboard.global');
 
 });
