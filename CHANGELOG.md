@@ -8,6 +8,17 @@ Il progetto segue (in modo leggero) il versioning semantico:
 - PATCH: fix e miglioramenti minori
 
 ---
+## v0.2.0 - Operator Area
+
+### Added
+- Custom operator dashboard
+- Grouped controls by status (critical / warning / ok)
+- Execution of security checks with esito ok/ko/na
+- Check history with operator and timestamp
+
+### Improved
+- Priority-based dashboard ordering
+- Visual status sections
 
 ## [0.1.0] – 2026-02-04
 
