@@ -39,9 +39,11 @@ class OperatorDashboardController extends Controller
 
         // Filtro per stato
         if ($request->filled('status')) {
+
             $tasks = $tasks->filter(function ($task) use ($request) {
                 return $task->current_status === $request->status;
             });
+
         }
 
         $grouped = $tasks->groupBy('current_status');

@@ -16,6 +16,24 @@
         {{ $task->securityTask->titolo }}
     </div>
 
+    {{-- TAG --}}
+    @if($task->securityTask->tags->isNotEmpty())
+        <div class="mt-2 flex flex-wrap gap-1">
+            @foreach($task->securityTask->tags as $tag)
+                <span class="bg-gray-200 text-gray-700 text-xs px-2 py-0.5 rounded">
+                    {{ $tag->nome }}
+                </span>
+            @endforeach
+        </div>
+    @endif
+
+    {{-- RESPONSABILE --}}
+    <div class="text-xs text-gray-500 mt-1">
+        Responsabile:
+        {{ $task->responsabile->name ?? 'Non assegnato' }}
+    </div>
+
+    {{-- Ultimo controllo --}}
     @if($task->latestCheck)
         <div class="text-sm text-gray-600 mt-2">
             Ultimo controllo:
@@ -32,9 +50,8 @@
     @endif
 
     {{-- Pulsanti --}}
-    <div class="mt-4 flex flex-wrap gap-2">
+    <div class="mt-3 flex flex-wrap gap-2">
 
-        {{-- Quick OK --}}
         <form method="POST"
               action="{{ route('operator.quick-check', $task->id) }}">
             @csrf
@@ -45,7 +62,6 @@
             </button>
         </form>
 
-        {{-- Quick KO --}}
         <form method="POST"
               action="{{ route('operator.quick-check', $task->id) }}">
             @csrf
@@ -56,7 +72,6 @@
             </button>
         </form>
 
-        {{-- Quick NA --}}
         <form method="POST"
               action="{{ route('operator.quick-check', $task->id) }}">
             @csrf
@@ -67,7 +82,6 @@
             </button>
         </form>
 
-        {{-- Bottone classico --}}
         <a href="{{ route('operator.check.show', $task->id) }}"
            class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs">
             Dettaglio

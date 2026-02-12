@@ -84,35 +84,47 @@
 
 {{-- BLOCCO ROSSO --}}
 @if($grouped->get('rosso', collect())->isNotEmpty())
-    <h2 class="text-lg font-bold text-red-700 mb-3">
-        🔴 Controlli Critici ({{ $counts['rosso'] }})
-    </h2>
+    <details open class="mb-4">
+        <summary class="cursor-pointer text-lg font-bold text-red-700">
+            🔴 Controlli Critici ({{ $counts['rosso'] }})
+        </summary>
 
-    @foreach($grouped->get('rosso', collect()) as $task)
-        @include('operator.partials.card', ['task' => $task])
-    @endforeach
+        <div class="mt-3">
+            @foreach($grouped->get('rosso', collect()) as $task)
+                @include('operator.partials.card', ['task' => $task])
+            @endforeach
+        </div>
+    </details>
 @endif
 
 {{-- BLOCCO ARANCIONE --}}
 @if($grouped->get('arancione', collect())->isNotEmpty())
-    <h2 class="text-lg font-bold text-yellow-700 mt-6 mb-3">
-        🟡 In Scadenza ({{ $counts['arancione'] }})
-    </h2>
+    <details class="mb-4">
+        <summary class="cursor-pointer text-lg font-bold text-yellow-700">
+            🟡 In Scadenza ({{ $counts['arancione'] }})
+        </summary>
 
-    @foreach($grouped->get('arancione', collect()) as $task)
-        @include('operator.partials.card', ['task' => $task])
-    @endforeach
+        <div class="mt-3">
+            @foreach($grouped->get('arancione', collect()) as $task)
+                @include('operator.partials.card', ['task' => $task])
+            @endforeach
+        </div>
+    </details>
 @endif
 
 {{-- BLOCCO VERDE --}}
-    @if($grouped->get('verde', collect())->isNotEmpty())
-    <h2 class="text-lg font-bold text-green-700 mt-6 mb-3">
-        🟢 Regolari ({{ $counts['verde'] }})
-    </h2>
+@if($grouped->get('verde', collect())->isNotEmpty())
+    <details class="mb-4">
+        <summary class="cursor-pointer text-lg font-bold text-green-700">
+            🟢 Regolari ({{ $counts['verde'] }})
+        </summary>
 
-    @foreach($grouped->get('verde', collect()) as $task)
-        @include('operator.partials.card', ['task' => $task])
-    @endforeach
+        <div class="mt-3">
+            @foreach($grouped->get('verde', collect()) as $task)
+                @include('operator.partials.card', ['task' => $task])
+            @endforeach
+        </div>
+    </details>
 @endif
 
 @endsection
