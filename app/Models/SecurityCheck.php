@@ -55,4 +55,10 @@ class SecurityCheck extends Model
     {
         return $this->belongsTo(User::class, 'checked_by');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'checked_by');
+    }
+
 }
