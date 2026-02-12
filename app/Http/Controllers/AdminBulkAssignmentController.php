@@ -7,6 +7,7 @@ use App\Models\SecurityTask;
 use App\Models\EntitySecurityTask;
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use App\Models\AdminAuditLog;
 
 class AdminBulkAssignmentController extends Controller
 {
@@ -151,6 +152,17 @@ class AdminBulkAssignmentController extends Controller
             }
         }
 
+        AdminAuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => $sync ? 'sync_assign' : 'bulk_assign',
+            'metadata' => [
+                'mode' => $mode,
+                'entities' => $entities,
+                'tasks_count' => $tasks->count(),
+                'new_assignments' => $created,
+                'sync_enabled' => $sync,
+            ],
+        ]);
         return back()->with('success', "Assegnazione completata. Nuove: $created — Già presenti: $existing");
     }
 }
