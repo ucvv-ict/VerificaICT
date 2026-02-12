@@ -16,6 +16,12 @@ Route::middleware(['auth'])->prefix('operatore')->group(function () {
 
     Route::post('/check/{entitySecurityTask}', [\App\Http\Controllers\OperatorCheckController::class, 'store'])
         ->name('operator.check.store');
+
+    Route::post(
+        '/operatore/task/{entitySecurityTask}/quick-check',
+        [\App\Http\Controllers\OperatorQuickCheckController::class, 'store']
+    )->name('operator.quick-check');
+
 });
 
 
