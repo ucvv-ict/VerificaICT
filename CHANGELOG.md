@@ -8,6 +8,18 @@ Il progetto segue (in modo leggero) il versioning semantico:
 - PATCH: fix e miglioramenti minori
 
 ---
+## v0.3.0 - Admin Bulk Assignment
+
+### Added
+- Bulk assignment by specific tasks
+- Bulk assignment by tags
+- Base package assignment
+- Preview before applying assignments
+- Dynamic UI with JS show/hide logic
+
+### Improved
+- Professionalized admin configuration workflow
+
 ## v0.2.0 - Operator Area
 
 ### Added
