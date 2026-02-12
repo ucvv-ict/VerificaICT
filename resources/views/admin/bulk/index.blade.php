@@ -37,7 +37,7 @@
         </div>
     </div>
 
-    <div id="tags-section" class="mb-6">
+    <div id="tags-section" class="mb-6 hidden">
         <h2 class="font-semibold mb-2">Seleziona Tag</h2>
         <div class="grid grid-cols-2 gap-2">
             @foreach($tags as $tag)
@@ -49,7 +49,7 @@
         </div>
     </div>
 
-    <div id="tasks-section" class="mb-6">
+    <div id="tasks-section" class="mb-6 hidden">
         <h2 class="font-semibold mb-2">Seleziona Task</h2>
         <div class="grid grid-cols-2 gap-2">
             @foreach(\App\Models\SecurityTask::orderBy('titolo')->get() as $task)
@@ -76,28 +76,40 @@ document.addEventListener('DOMContentLoaded', function () {
     const tasksSection = document.getElementById('tasks-section');
     const tagsSection = document.getElementById('tags-section');
 
+    const taskInputs = tasksSection.querySelectorAll('input[type="checkbox"]');
+    const tagInputs = tagsSection.querySelectorAll('input[type="checkbox"]');
+
+    function disableInputs(inputs, disabled = true) {
+        inputs.forEach(input => {
+            input.disabled = disabled;
+            if (disabled) input.checked = false;
+        });
+    }
+
     function updateVisibility() {
         const mode = modeSelect.value;
 
+        tasksSection.classList.add('hidden');
+        tagsSection.classList.add('hidden');
+
+        disableInputs(taskInputs, true);
+        disableInputs(tagInputs, true);
+
         if (mode === 'tasks') {
-            tasksSection.style.display = 'block';
-            tagsSection.style.display = 'none';
+            tasksSection.classList.remove('hidden');
+            disableInputs(taskInputs, false);
         }
 
         if (mode === 'tags') {
-            tasksSection.style.display = 'none';
-            tagsSection.style.display = 'block';
+            tagsSection.classList.remove('hidden');
+            disableInputs(tagInputs, false);
         }
 
-        if (mode === 'package') {
-            tasksSection.style.display = 'none';
-            tagsSection.style.display = 'none';
-        }
+        // package: entrambe nascoste e disabilitate
     }
 
     modeSelect.addEventListener('change', updateVisibility);
 
-    // Inizializzazione al load
     updateVisibility();
 });
 </script>
