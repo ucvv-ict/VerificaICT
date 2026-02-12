@@ -15,7 +15,7 @@ class OperatorDashboardController extends Controller
         $tasks = EntitySecurityTask::with([
                 'entity',
                 'securityTask',
-                'lastCheck'
+                'latestCheck'
             ])
             ->whereIn('entity_id', $entityIds)
             ->where('attiva', true)
