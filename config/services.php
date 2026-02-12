@@ -34,5 +34,11 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'cie' => [
+        'client_id' => env('CIE_CLIENT_ID'),
+        'client_secret' => env('CIE_CLIENT_SECRET'),
+        'redirect' => env('CIE_REDIRECT_URI'),
+        'base_uri' => env('CIE_BASE_URI'),
+    ],
 
 ];
