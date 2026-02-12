@@ -74,6 +74,8 @@ class AdminBulkAssignmentController extends Controller
 
         $tasks = collect();
         $entities = [];
+        $sync = $request->boolean('sync');
+
 
         if ($mode === 'tasks') {
 
