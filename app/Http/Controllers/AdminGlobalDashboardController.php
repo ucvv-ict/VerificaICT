@@ -31,14 +31,21 @@ class AdminGlobalDashboardController extends Controller
                 if ($status === 'rosso') $critici++;
                 elseif ($status === 'arancione') $warning++;
                 elseif ($status === 'verde') $ok++;
+                
             }
+
+            $totale = $tasks->count();
+            $percentuale = $totale > 0
+                ? round(($ok / $totale) * 100)
+                : 0;
 
             $data[] = [
                 'entity' => $entity,
                 'critici' => $critici,
                 'warning' => $warning,
                 'ok' => $ok,
-                'totale' => $tasks->count(),
+                'totale' => $totale,
+                'percentuale' => $percentuale,
             ];
         }
 
