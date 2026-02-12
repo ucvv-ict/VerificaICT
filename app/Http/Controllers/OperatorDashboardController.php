@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\EntitySecurityTask;
 use Illuminate\Http\Request;
+use App\Models\Tag;
 
 class OperatorDashboardController extends Controller
 {
@@ -10,30 +11,57 @@ class OperatorDashboardController extends Controller
     {
         $user = auth()->user();
 
-        $entityIds = $user->entities()->pluck('entities.id');
+        $entityIds = $user->entities->pluck('id');
 
-        
-        $tasks = EntitySecurityTask::with([
-                'entity',
-                'securityTask',
-                'latestCheck.user'
-            ])
-            ->whereIn('entity_id', $entityIds)
-            ->where('attiva', true)
-            ->get();
+        $query = EntitySecurityTask::with([
+            'entity',
+            'securityTask.tags',
+            'latestCheck.user'
+        ])
+        ->whereIn('entity_id', $entityIds)
+        ->where('attiva', true);
 
-        $grouped = [
-            'rosso' => $tasks->where('current_status', 'rosso'),
-            'arancione' => $tasks->where('current_status', 'arancione'),
-            'verde' => $tasks->where('current_status', 'verde'),
-        ];
+        // Filtro ente
+        if ($request->filled('entity')) {
+            $query->where('entity_id', $request->entity);
+        }
+
+        $tasks = $query->get();
+
+        // Filtro per tag
+        if ($request->filled('tag')) {
+            $tasks = $tasks->filter(function ($task) use ($request) {
+                return $task->securityTask->tags
+                    ->pluck('id')
+                    ->contains($request->tag);
+            });
+        }
+
+        // Filtro per stato
+        if ($request->filled('status')) {
+
+            $tasks = $tasks->filter(function ($task) use ($request) {
+                return $task->current_status === $request->status;
+            });
+
+        }
+
+        $grouped = $tasks->groupBy('current_status');
 
         $counts = [
-            'rosso' => $grouped['rosso']->count(),
-            'arancione' => $grouped['arancione']->count(),
-            'verde' => $grouped['verde']->count(),
+            'rosso' => $grouped->get('rosso', collect())->count(),
+            'arancione' => $grouped->get('arancione', collect())->count(),
+            'verde' => $grouped->get('verde', collect())->count(),
         ];
 
-        return view('operator.dashboard', compact('grouped', 'counts'));
+        $entities = $user->entities;
+        $tags = Tag::orderBy('nome')->get();
+
+        return view('operator.dashboard', compact(
+            'grouped',
+            'counts',
+            'entities',
+            'tags'
+        ));
     }
 }
