@@ -8,6 +8,24 @@ Il progetto segue (in modo leggero) il versioning semantico:
 - PATCH: fix e miglioramenti minori
 
 ---
+## v0.7.0 - 2026-02-13
+
+### Added
+- UserResource per gestione admin/operatori
+- EntityResource per gestione enti
+- Middleware admin e operator
+- Login unificata con redirect dinamico per ruolo
+- Separazione navigation groups (Operatività / Configurazione)
+
+### Changed
+- Redirect post-login basato su is_admin
+- Aggiornato flusso 2FA con redirect condizionale
+- Ristrutturazione routing web.php
+
+### Security
+- Blocco accesso panel Filament per operatori
+- Blocco accesso area operatore per admin
+
 ## v0.6.0 - Operator UX Improvements
 
 ### Added

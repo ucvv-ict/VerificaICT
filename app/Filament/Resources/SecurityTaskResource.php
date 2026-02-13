@@ -27,6 +27,12 @@ class SecurityTaskResource extends Resource
     protected static ?string $model = SecurityTask::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShieldCheck;
+    protected static ?int $navigationSort = 3;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Configurazione';
+    }
 
     public static function form(Schema $schema): Schema
     {

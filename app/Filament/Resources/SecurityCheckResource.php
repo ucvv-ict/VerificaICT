@@ -29,6 +29,12 @@ class SecurityCheckResource extends Resource
     protected static ?string $model = SecurityCheck::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
+    protected static ?int $navigationSort = 2;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Operatività';
+    }
 
     public static function form(Schema $schema): Schema
     {
