@@ -32,6 +32,10 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->homeUrl(fn () => auth()->user()?->isAdmin()
+                ? url('/admin')
+                : url('/operatore')
+            )
             ->navigationGroups([
                 \Filament\Navigation\NavigationGroup::make()
                     ->label('Operativita')

@@ -8,7 +8,6 @@ use App\Http\Middleware\ForceTwoFactorSetup;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
-use Filament\Pages\Dashboard;
 use Filament\Pages\Page;
 use PragmaRX\Google2FALaravel\Facade as Google2FA;
 
@@ -26,6 +25,21 @@ class TwoFactorChallenge extends Page
 
     public string $otp = '';
 
+    protected function redirectAfterVerification(): void
+    {
+        $user = auth()->user();
+
+        if (! $user instanceof User) {
+            return;
+        }
+
+        if ($user->isAdmin()) {
+            $this->redirect('/admin');
+        } else {
+            $this->redirect('/operatore');
+        }
+    }
+
     public function mount(): void
     {
         $user = auth()->user();
@@ -35,13 +49,15 @@ class TwoFactorChallenge extends Page
         }
 
         if (! $user->hasConfiguredTwoFactor()) {
-            $this->redirect(TwoFactorSetup::getUrl(panel: Filament::getCurrentPanel()?->getId()));
+            $this->redirect(
+                TwoFactorSetup::getUrl(panel: Filament::getCurrentPanel()?->getId())
+            );
 
             return;
         }
 
         if ((bool) session()->get(ForceTwoFactorSetup::SESSION_KEY, false)) {
-            $this->redirect(Dashboard::getUrl(panel: Filament::getCurrentPanel()?->getId()));
+            $this->redirectAfterVerification();
         }
     }
 
@@ -76,6 +92,6 @@ class TwoFactorChallenge extends Page
 
         session()->put(ForceTwoFactorSetup::SESSION_KEY, true);
 
-        $this->redirect(Dashboard::getUrl(panel: Filament::getCurrentPanel()?->getId()));
+        $this->redirectAfterVerification();
     }
 }
