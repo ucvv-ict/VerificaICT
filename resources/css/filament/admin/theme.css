@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================= */
+/* VERIFICA ICT – TEMA ISTITUZIONALE */
+/* ============================= */
+
+/* Palette primaria */
+:root {
+    --fi-color-primary-600: 30 58 138; /* Blu istituzionale */
+}
+
+/* Rimuoviamo ombre troppo SaaS */
+.fi-card {
+    @apply shadow-none border border-gray-200 rounded-lg;
+}
+
+.fi-section {
+    @apply rounded-lg;
+}
+
+/* Tabelle più neutre */
+.fi-table th {
+    @apply text-gray-600 font-medium;
+}
+
+.fi-table td {
+    @apply text-gray-800;
+}
+
+/* Alert più sobri */
+.fi-alert {
+    @apply rounded-lg;
+}
