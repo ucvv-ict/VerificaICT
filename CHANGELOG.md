@@ -8,6 +8,25 @@ Il progetto segue (in modo leggero) il versioning semantico:
 - PATCH: fix e miglioramenti minori
 
 ---
+## v0.9.0 - 2026-02-XX
+
+### Added
+- Custom Filament admin theme (Tailwind build)
+- Refactoring Admin Dashboard with KPI + Entities summary
+- Bulk Assignment ported to Filament Page (sync mode, preview modal, live counters)
+- 2FA flow fully integrated with custom layout
+- Proper logout option during 2FA challenge
+
+### Fixed
+- Livewire serialization issues with QR code
+- Redirect after 2FA to custom AdminDashboard
+- Route handling for custom dashboard (no default Filament dashboard)
+- Middleware route safety checks
+
+### Improved
+- Panel navigation grouping (Operatività / Configurazione)
+- Authentication flow consistency
+
 ## v0.8.0
 
 ### Improved
