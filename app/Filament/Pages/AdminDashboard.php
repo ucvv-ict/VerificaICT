@@ -8,10 +8,17 @@ use App\Models\Entity;
 use App\Models\EntitySecurityTask;
 use App\Models\User;
 use App\Models\AdminAuditLog;
+use BackedEnum;
+use Filament\Support\Icons\Heroicon;
 
 class AdminDashboard extends Page
 {
     protected static ?string $navigationLabel = 'Dashboard Globale';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::ChartBar;
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Operatività';
+    }
 
     protected string $view = 'filament.pages.admin-dashboard';
 

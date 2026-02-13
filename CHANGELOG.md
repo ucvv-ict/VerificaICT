@@ -8,6 +8,15 @@ Il progetto segue (in modo leggero) il versioning semantico:
 - PATCH: fix e miglioramenti minori
 
 ---
+## v0.8.0
+
+### Improved
+- Bulk assignment migrated to Filament native page
+- Sync mode support
+- Live task and entity counters
+- Modal preview with impact summary
+
+
 ## v0.7.0 - 2026-02-13
 
 ### Added
