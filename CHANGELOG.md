@@ -8,6 +8,19 @@ Il progetto segue (in modo leggero) il versioning semantico:
 - PATCH: fix e miglioramenti minori
 
 ---
+## [v0.10.0] - 2026-02-17
+
+### Fixed
+- Stabilized first login flow
+- Fixed redirect loop in auth middleware
+- Fixed 2FA setup verification window
+- Resolved PSR-4 conflict in EntityTable
+
+### Changed
+- Removed legacy EntityResource (v3 structure)
+- Aligned resources to Filament v4 folder structure
+- Localized Entity labels to Italian (Ente/Enti)
+
 ## v0.9.0 - 2026-02-XX
 
 ### Added
