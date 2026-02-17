@@ -48,9 +48,13 @@ class FirstLoginPasswordChange extends Page
 
         $user->forceFill([
             'password' => Hash::make($this->password),
-            'force_password_change' => false,
+            'password_changed_at' => now(), // 🔴 QUESTO È FONDAMENTALE
         ])->save();
 
-        $this->redirect(TwoFactorSetup::getUrl(panel: Filament::getCurrentPanel()?->getId()));
+        session()->regenerate();
+
+        $this->redirect(
+            TwoFactorSetup::getUrl(panel: Filament::getCurrentPanel()?->getId())
+        );
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Entities\Schemas;
+namespace App\Filament\Resources\Entities\Tables;
 
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;

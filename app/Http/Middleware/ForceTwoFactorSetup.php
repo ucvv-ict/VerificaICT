@@ -30,37 +30,39 @@ class ForceTwoFactorSetup
 
         $panel = Filament::getCurrentPanel();
 
+        // 🔹 Route base auth Filament
+        $loginRouteName = $panel?->generateRouteName('auth.login');
+        $logoutRouteName = $panel?->generateRouteName('auth.logout');
+
         $setupRouteName = TwoFactorSetup::getRouteName($panel);
         $challengeRouteName = TwoFactorChallenge::getRouteName($panel);
         $changePasswordRouteName = FirstLoginPasswordChange::getRouteName($panel);
-        $logoutRouteName = $panel?->generateRouteName('auth.logout');
 
-        // Consenti sempre il logout, anche prima del completamento 2FA.
-        if (($logoutRouteName !== null) && $request->routeIs($logoutRouteName)) {
+        // 🔹 Esclusioni critiche per evitare loop
+        if (
+            ($loginRouteName && $request->routeIs($loginRouteName)) ||
+            ($logoutRouteName && $request->routeIs($logoutRouteName)) ||
+            ($setupRouteName && $request->routeIs($setupRouteName)) ||
+            ($challengeRouteName && $request->routeIs($challengeRouteName)) ||
+            ($changePasswordRouteName && $request->routeIs($changePasswordRouteName))
+        ) {
             return $next($request);
         }
 
-        // Consenti sempre la pagina cambio password: è gestita da middleware dedicato.
-        if ($request->routeIs($changePasswordRouteName)) {
-            return $next($request);
-        }
-
+        // 🔹 Se 2FA NON configurato → vai a setup
         if (! $user->hasConfiguredTwoFactor()) {
-            if ($request->routeIs($setupRouteName)) {
-                return $next($request);
-            }
-
-            return redirect()->to(TwoFactorSetup::getUrl(panel: $panel?->getId()));
+            return redirect()->to(
+                TwoFactorSetup::getUrl(panel: $panel?->getId())
+            );
         }
 
-        if ((bool) $request->session()->get(self::SESSION_KEY, false)) {
-            return $next($request);
+        // 🔹 Se configurato ma non validato in sessione → challenge
+        if (! (bool) $request->session()->get(self::SESSION_KEY, false)) {
+            return redirect()->to(
+                TwoFactorChallenge::getUrl(panel: $panel?->getId())
+            );
         }
 
-        if ($request->routeIs($challengeRouteName)) {
-            return $next($request);
-        }
-
-        return redirect()->to(TwoFactorChallenge::getUrl(panel: $panel?->getId()));
+        return $next($request);
     }
 }

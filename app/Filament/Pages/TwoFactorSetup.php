@@ -12,6 +12,7 @@ use Filament\Pages\Dashboard;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Session;
 use PragmaRX\Google2FALaravel\Facade as Google2FA;
+use App\Filament\Pages\AdminDashboard;
 
 class TwoFactorSetup extends Page
 {
@@ -20,16 +21,20 @@ class TwoFactorSetup extends Page
     protected static ?string $slug = '2fa/setup';
 
     protected static bool $shouldRegisterNavigation = false;
+    protected static bool $hasNavigation = false;
 
-    protected ?string $heading = 'Configurazione autenticazione a due fattori';
-
-    protected ?string $subheading = 'Per motivi di sicurezza devi completare il setup del 2FA prima di usare il pannello.';
+    protected static string $layout = 'layouts.filament-auth';
 
     protected string $view = 'filament.pages.two-factor-setup';
 
     public string $otp = '';
+    
+    public $qrCodeSvg = null;
 
-    public string $qrCodeSvg = '';
+    public function getHeading(): string
+    {
+        return '';
+    }
 
     public function mount(): void
     {
@@ -40,14 +45,17 @@ class TwoFactorSetup extends Page
         }
 
         if ($user->hasConfiguredTwoFactor()) {
-            if ((bool) session()->get(ForceTwoFactorSetup::SESSION_KEY, false)) {
-                $this->redirect(Dashboard::getUrl(panel: Filament::getCurrentPanel()?->getId()));
 
+            if ((bool) session()->get(ForceTwoFactorSetup::SESSION_KEY, false)) {
+                $this->redirect(
+                    AdminDashboard::getUrl(panel: Filament::getCurrentPanel()?->getId())
+                );
                 return;
             }
 
-            $this->redirect(TwoFactorChallenge::getUrl(panel: Filament::getCurrentPanel()?->getId()));
-
+            $this->redirect(
+                TwoFactorChallenge::getUrl(panel: Filament::getCurrentPanel()?->getId())
+            );
             return;
         }
 
@@ -58,11 +66,17 @@ class TwoFactorSetup extends Page
             session()->put(self::SESSION_SETUP_SECRET, $secret);
         }
 
-        $this->qrCodeSvg = Google2FA::getQRCodeInline(
-            config('app.name', 'VerificaICT'),
-            $user->email,
-            $secret,
-        );
+        
+        $qr = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(200)
+            ->generate(
+                Google2FA::getQRCodeUrl(
+                    config('app.name', 'VerificaICT'),
+                    $user->email,
+                    $secret,
+                )
+            );
+
+        $this->qrCodeSvg = $qr->toHtml();
     }
 
     public function confirmTwoFactorSetup(): void
@@ -88,9 +102,8 @@ class TwoFactorSetup extends Page
             return;
         }
 
-        if (! (bool) Google2FA::verifyKey($secret, $this->otp, 0)) {
+        if (! (bool) Google2FA::verifyKey($secret, $this->otp, 2)) {
             $this->addError('otp', 'Codice OTP non valido o scaduto.');
-
             return;
         }
 
@@ -98,7 +111,11 @@ class TwoFactorSetup extends Page
 
         Session::forget(self::SESSION_SETUP_SECRET);
         session()->put(ForceTwoFactorSetup::SESSION_KEY, true);
+        session()->regenerate();
 
-        $this->redirect(Dashboard::getUrl(panel: Filament::getCurrentPanel()?->getId()));
+        $this->redirect(
+            AdminDashboard::getUrl(panel: Filament::getCurrentPanel()?->getId())
+        );
+
     }
 }

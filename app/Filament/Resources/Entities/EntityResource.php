@@ -6,7 +6,7 @@ use App\Filament\Resources\Entities\Pages\CreateEntity;
 use App\Filament\Resources\Entities\Pages\EditEntity;
 use App\Filament\Resources\Entities\Pages\ListEntities;
 use App\Filament\Resources\Entities\Schemas\EntityForm;
-use App\Filament\Resources\Entities\Tables\EntitiesTable;
+use App\Filament\Resources\Entities\Tables\EntityTable;
 use App\Models\Entity;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -35,6 +35,20 @@ class EntityResource extends Resource
         return 'Configurazione';
     }
 
+    public static function getModelLabel(): string
+    {
+        return 'Ente';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Enti';
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Enti';
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -43,7 +57,7 @@ class EntityResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return EntitiesTable::configure($table);
+        return EntityTable::table($table);
     }
 
     public static function getRelations(): array

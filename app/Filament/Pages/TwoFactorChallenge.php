@@ -16,12 +16,15 @@ class TwoFactorChallenge extends Page
     protected static ?string $slug = '2fa/challenge';
 
     protected static bool $shouldRegisterNavigation = false;
+    protected static bool $hasNavigation = false;
 
-    protected ?string $heading = 'Verifica autenticazione a due fattori';
-
-    protected ?string $subheading = 'Inserisci il codice OTP generato dalla tua app di autenticazione.';
+    public function getHeading(): string
+    {
+        return '';
+    }
 
     protected string $view = 'filament.pages.two-factor-challenge';
+    protected static string $layout = 'layouts.filament-auth';
 
     public string $otp = '';
 

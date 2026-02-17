@@ -24,7 +24,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'is_admin'
+        'is_admin',
+        'force_password_change',
+        'two_factor_enabled'
+
     ];
 
     /**
@@ -46,6 +49,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'password_changed_at' => 'datetime',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_enabled' => 'boolean',

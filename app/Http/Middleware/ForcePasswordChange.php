@@ -13,9 +13,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ForcePasswordChange
 {
-    /**
-     * Forza il cambio password al primo accesso.
-     */
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
@@ -24,18 +21,27 @@ class ForcePasswordChange
             return $next($request);
         }
 
-        if (! $user->mustChangePassword()) {
-            return $next($request);
-        }
-
         $panel = Filament::getCurrentPanel();
-        $changePasswordRouteName = FirstLoginPasswordChange::getRouteName($panel);
-        $logoutRouteName = $panel?->generateRouteName('auth.logout');
 
-        if ($request->routeIs($changePasswordRouteName) || (($logoutRouteName !== null) && $request->routeIs($logoutRouteName))) {
+        $loginRoute = $panel?->generateRouteName('auth.login');
+        $logoutRoute = $panel?->generateRouteName('auth.logout');
+        $changePasswordRoute = FirstLoginPasswordChange::getRouteName($panel);
+
+        // 🔹 Escludi route critiche
+        if (
+            ($loginRoute && $request->routeIs($loginRoute)) ||
+            ($logoutRoute && $request->routeIs($logoutRoute)) ||
+            ($changePasswordRoute && $request->routeIs($changePasswordRoute))
+        ) {
             return $next($request);
         }
 
-        return redirect()->to(FirstLoginPasswordChange::getUrl(panel: $panel?->getId()));
+        if (is_null($user->password_changed_at)) {
+            return redirect()->to(
+                FirstLoginPasswordChange::getUrl(panel: $panel?->getId())
+            );
+        }
+
+        return $next($request);
     }
 }

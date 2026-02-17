@@ -15,11 +15,12 @@ class OperatorsSeeder extends Seeder
     {
         // Elenco operatori interni da garantire nel sistema.
         $operators = [
-            ['name' => 'Fabio Franci', 'email' => 'fabio.franci@verificaict.local'],
-            ['name' => 'Andrea Arcidiacono', 'email' => 'andrea.arcidiacono@verificaict.local'],
-            ['name' => 'Alessandro Melloni', 'email' => 'alessandro.melloni@verificaict.local'],
-            ['name' => 'Giuseppe Gargiulo', 'email' => 'giuseppe.gargiulo@verificaict.local'],
-            ['name' => 'Daniele Vannoni', 'email' => 'daniele.vannoni@verificaict.local'],
+            ['name' => 'ADMIN', 'email' => 'fabio.franci@gmail.com'],
+            ['name' => 'Fabio Franci', 'email' => 'f.franci@ucvv.it'],
+            ['name' => 'Andrea Arcidiacono', 'email' => 'a.arcidiacono@ucvv.it'],
+            ['name' => 'Alessandro Melloni', 'email' => 'a.melloni@ucvv.it'],
+            ['name' => 'Giuseppe Gargiulo', 'email' => 'g.gargiulo@ucvv.it'],
+            ['name' => 'Daniele Vannoni', 'email' => 'd.vannoni@ucvv.it'],
         ];
 
         // Tutti gli enti esistenti: ogni operatore verrà associato a tutti.
