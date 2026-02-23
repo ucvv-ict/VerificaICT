@@ -33,11 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->login()
-            ->homeUrl(fn () => auth()->user()?->isAdmin()
-                ? url('/admin')
-                : url('/operatore')
-            )
-
+            ->homeUrl(fn () => \App\Filament\Pages\AdminDashboard::getUrl())
             ->navigationGroups([
                 \Filament\Navigation\NavigationGroup::make()
                     ->label('Operativita')
