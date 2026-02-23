@@ -12,7 +12,7 @@ use Filament\Pages\Dashboard;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Session;
 use PragmaRX\Google2FALaravel\Facade as Google2FA;
-use App\Filament\Pages\AdminDashboard;
+use App\Filament\Pages\MainDashboard;
 
 class TwoFactorSetup extends Page
 {
@@ -48,7 +48,7 @@ class TwoFactorSetup extends Page
 
             if ((bool) session()->get(ForceTwoFactorSetup::SESSION_KEY, false)) {
                 $this->redirect(
-                    AdminDashboard::getUrl(panel: Filament::getCurrentPanel()?->getId())
+                    MainDashboard::getUrl(panel: Filament::getCurrentPanel()?->getId())
                 );
                 return;
             }
@@ -114,7 +114,7 @@ class TwoFactorSetup extends Page
         session()->regenerate();
 
         $this->redirect(
-            AdminDashboard::getUrl(panel: Filament::getCurrentPanel()?->getId())
+            MainDashboard::getUrl(panel: Filament::getCurrentPanel()?->getId())
         );
 
     }
