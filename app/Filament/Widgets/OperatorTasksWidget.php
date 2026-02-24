@@ -12,6 +12,7 @@ use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Filament\Tables\Filters\SelectFilter;
 
 class OperatorTasksWidget extends TableWidget
 {
@@ -102,6 +103,47 @@ class OperatorTasksWidget extends TableWidget
                     ->label('Responsabile')
                     ->searchable()
                     ->sortable(),
+            ])
+            ->filters([
+                SelectFilter::make('status')
+                    ->label('Filtra per stato')
+                    ->options([
+                        'rosso' => 'Solo critiche',
+                        'arancione' => 'In scadenza',
+                        'verde' => 'Regolari',
+                    ])
+                    ->query(function (Builder $query, array $data) {
+
+                        if (! $data['value']) {
+                            return;
+                        }
+
+                        $status = $data['value'];
+
+                        $query->where(function ($q) use ($status) {
+
+                            if ($status === 'rosso') {
+                                $q->where(function ($sub) {
+                                    $sub->whereDoesntHave('latestCheck')
+                                        ->orWhereHas('latestCheck', fn ($c) =>
+                                            $c->where('esito', '!=', 'ok')
+                                        );
+                                });
+                            }
+
+                            if ($status === 'arancione') {
+                                $q->whereHas('latestCheck', function ($c) {
+                                    $c->where('esito', 'ok');
+                                });
+                            }
+
+                            if ($status === 'verde') {
+                                $q->whereHas('latestCheck', function ($c) {
+                                    $c->where('esito', 'ok');
+                                });
+                            }
+                        });
+                    }),
             ])
             ->recordClasses(fn ($record) => match ($record->current_status) {
                 'rosso' => 'row-critical',
