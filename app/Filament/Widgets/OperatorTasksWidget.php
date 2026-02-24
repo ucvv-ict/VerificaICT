@@ -14,6 +14,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Filament\Tables\Filters\SelectFilter;
 
+use Filament\Actions\Action;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use App\Models\SecurityCheck;
+
+
 class OperatorTasksWidget extends TableWidget
 {
     protected static ?string $heading = 'Attività dei tuoi enti';
@@ -144,6 +150,36 @@ class OperatorTasksWidget extends TableWidget
                             }
                         });
                     }),
+            ])
+            ->recordActions([
+                Action::make('registra_check')
+                    ->label('Registra check')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->form([
+                        \Filament\Forms\Components\Select::make('esito')
+                            ->label('Esito')
+                            ->options([
+                                'ok' => 'OK',
+                                'ko' => 'Non conforme',
+                            ])
+                            ->required(),
+
+                        \Filament\Forms\Components\Textarea::make('note')
+                            ->label('Note')
+                            ->rows(3),
+                    ])
+                    ->action(function (EntitySecurityTask $record, array $data) {
+                        \App\Models\SecurityCheck::create([
+                            'entity_security_task_id' => $record->id,
+                            'checked_at' => now(),
+                            'esito' => $data['esito'],
+                            'note' => $data['note'] ?? null,
+                            'checked_by' => auth()->id(), // 🔥 AGGIUNGI QUESTO
+                        ]);
+                    })
+                    ->modalHeading('Registra nuovo controllo')
+                    ->modalSubmitActionLabel('Salva'),
             ])
             ->recordClasses(fn ($record) => match ($record->current_status) {
                 'rosso' => 'row-critical',
