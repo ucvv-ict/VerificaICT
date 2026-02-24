@@ -31,6 +31,18 @@ class SecurityCheckResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
     protected static ?int $navigationSort = 2;
 
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return static::getModel()::count() > 0 ? 'primary' : 'gray';
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        $count = static::getModel()::count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
     public static function getNavigationGroup(): ?string
     {
         return 'Operatività';

@@ -24,6 +24,18 @@ class EntityResource extends Resource
 
     protected static ?string $navigationLabel = 'Enti';
 
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return static::getModel()::count() > 0 ? 'primary' : 'gray';
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        $count = static::getModel()::count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
     protected static ?int $navigationSort = 1;
     public static function shouldRegisterNavigation(): bool
     {

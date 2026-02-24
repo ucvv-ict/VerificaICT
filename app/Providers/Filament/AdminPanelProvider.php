@@ -47,7 +47,12 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
-
+            ->renderHook(
+                'panels::topbar.start',
+                fn (): string => app()->environment('production')
+                    ? ''
+                    : view('filament.partials.env-banner')->render()
+            )
             ->discoverResources(
                 in: app_path('Filament/Resources'),
                 for: 'App\Filament\Resources'
@@ -62,7 +67,7 @@ class AdminPanelProvider extends PanelProvider
                 in: app_path('Filament/Widgets'),
                 for: 'App\Filament\Widgets'
             )
-            
+
             ->pages([
                 \App\Filament\Pages\MainDashboard::class,
             ])
