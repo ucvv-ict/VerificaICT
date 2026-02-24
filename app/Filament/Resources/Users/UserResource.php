@@ -25,6 +25,18 @@ class UserResource extends Resource
         return auth()->user()?->isAdmin() ?? false;
     }
 
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return static::getModel()::count() > 0 ? 'primary' : 'gray';
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        $count = static::getModel()::count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
     public static function getNavigationGroup(): ?string
     {
         return 'Configurazione';

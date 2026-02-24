@@ -8,6 +8,25 @@ Il progetto segue (in modo leggero) il versioning semantico:
 - PATCH: fix e miglioramenti minori
 
 ---
+## [0.11.0] - 2026-02-XX
+
+### Added
+- Unified admin panel (single panel architecture)
+- Role-based dynamic dashboard (admin / operator)
+- Operator simulation mode via query string
+- Navigation badges for main resources
+- Development environment top banner
+
+### Changed
+- Removed legacy AdminDashboard
+- Refactored widget loading to use getWidgets()
+- Cleaned panel provider configuration
+
+### Fixed
+- Resolved Livewire widget duplication issue
+- Fixed component registration with discoverWidgets()
+
+
 ## [v0.10.0] - 2026-02-17
 
 ### Fixed

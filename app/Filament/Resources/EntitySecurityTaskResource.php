@@ -29,6 +29,18 @@ class EntitySecurityTaskResource extends Resource
 {
     protected static ?string $model = EntitySecurityTask::class;
 
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return static::getModel()::count() > 0 ? 'primary' : 'gray';
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        $count = static::getModel()::count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
     protected static ?int $navigationSort = 3;
 

@@ -33,10 +33,6 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->login()
-            ->homeUrl(fn () => auth()->user()?->isAdmin()
-                ? url('/admin')
-                : url('/operatore')
-            )
 
             ->navigationGroups([
                 \Filament\Navigation\NavigationGroup::make()
@@ -47,20 +43,37 @@ class AdminPanelProvider extends PanelProvider
                     ->label('Configurazione')
                     ->collapsed(true),
             ])
+
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
+            ->renderHook(
+                'panels::topbar.start',
+                fn (): string => app()->environment('production')
+                    ? ''
+                    : view('filament.partials.env-banner')->render()
+            )
+            ->discoverResources(
+                in: app_path('Filament/Resources'),
+                for: 'App\Filament\Resources'
+            )
+
+            ->discoverPages(
+                in: app_path('Filament/Pages'),
+                for: 'App\Filament\Pages'
+            )
+
+            ->discoverWidgets(
+                in: app_path('Filament/Widgets'),
+                for: 'App\Filament\Widgets'
+            )
+
             ->pages([
-                \App\Filament\Pages\AdminDashboard::class,
+                \App\Filament\Pages\MainDashboard::class,
             ])
-            ->homeUrl(fn () => \App\Filament\Pages\AdminDashboard::getUrl())
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->widgets([
-                SecurityOverviewWidget::class,
-                CriticalSecurityTasksWidget::class,
-            ])
+
+            ->homeUrl(fn () => \App\Filament\Pages\MainDashboard::getUrl())
+
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -72,6 +85,7 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
+
             ->authMiddleware([
                 Authenticate::class,
                 ForcePasswordChange::class,
