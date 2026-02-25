@@ -83,11 +83,12 @@ class EntitySecurityTaskResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('entity.nome'),
-                TextColumn::make('securityTask.titolo'),
+                TextColumn::make('entity.nome')->searchable()->sortable(),
+                TextColumn::make('securityTask.titolo')->searchable()->sortable(),
                 BadgeColumn::make('current_status')
                     ->label('Stato')
                     ->color(fn (string $state): string => match ($state) {
+                        'nero' => 'gray',
                         'verde' => 'success',
                         'arancione' => 'warning',
                         default => 'danger',
@@ -95,8 +96,6 @@ class EntitySecurityTaskResource extends Resource
                 TextColumn::make('days_from_last_check')
                     ->label('Giorni da ultimo check')
                     ->formatStateUsing(fn (?int $state): string => $state === null ? '—' : (string) $state),
-                TextColumn::make('responsabile.name')
-                    ->label('Responsabile'),
                 IconColumn::make('attiva')
                     ->boolean(),
             ])
@@ -105,12 +104,17 @@ class EntitySecurityTaskResource extends Resource
                     ->relationship('entity', 'nome')
                     ->searchable()
                     ->preload(),
+                SelectFilter::make('securityTask')
+                    ->relationship('securityTask', 'titolo')
+                    ->searchable()
+                    ->preload(),
                 SelectFilter::make('current_status')
                     ->label('Stato')
                     ->options([
                         'verde' => 'verde',
                         'arancione' => 'arancione',
                         'rosso' => 'rosso',
+                        'nero' => 'nero',
                     ])
                     ->query(function (Builder $query, array $data): void {
                         $status = $data['value'] ?? null;
@@ -157,7 +161,7 @@ class EntitySecurityTaskResource extends Resource
     {
         return EntitySecurityTask::query()
             ->with([
-                'securityTask:id,periodicita_giorni,warning_after',
+                'securityTask:id,periodicita_giorni,warning_alert',
                 'latestCheck',
             ])
             ->get(['id', 'security_task_id', 'attiva'])

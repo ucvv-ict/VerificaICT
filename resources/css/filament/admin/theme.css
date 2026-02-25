@@ -11,3 +11,7 @@ tr.row-critical > td {
 tr.row-warning > td {
     background: #fefce8 !important; /* yellow-50 */
 }
+
+tr.row-critical-black > td {
+    background: #ededed !important; /* gray */
+}

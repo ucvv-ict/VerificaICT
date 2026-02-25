@@ -21,6 +21,8 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 
 class SecurityTaskResource extends Resource
 {
@@ -53,34 +55,49 @@ class SecurityTaskResource extends Resource
                 TextInput::make('titolo')
                     ->required()
                     ->maxLength(255),
+
                 Textarea::make('descrizione')
                     ->nullable()
                     ->columnSpanFull(),
+
                 TextInput::make('periodicita_giorni')
-                    ->required()
+                    ->label('Periodicità (giorni)')
                     ->numeric()
-                    ->integer()
-                    ->minValue(1),
-                TextInput::make('warning_after')
-                    ->required()
-                    ->numeric()
-                    ->integer()
                     ->minValue(1)
-                    ->gt('periodicita_giorni')
-                    ->validationMessages([
-                        'gt' => 'Il valore di warning_after deve essere maggiore di periodicita_giorni.',
-                    ]),
+                    ->required()
+                    ->reactive()
+                    ->helperText('Dopo quanti giorni dalla verifica il controllo va ripetuto.'),
+
+                TextInput::make('warning_alert')
+                    ->label('Pre-allarme (giorni prima)')
+                    ->numeric()
+                    ->minValue(0)
+                    ->default(fn () => config('security.default_warning_alert'))
+                    ->required()
+                    ->reactive()
+                    ->helperText('Quanti giorni prima della scadenza lo stato diventa ARANCIONE.')
+                    ->rule(function (Get $get) {
+                        return function (string $attribute, $value, \Closure $fail) use ($get) {
+                            $period = (int) ($get('periodicita_giorni') ?? 0);
+                            $warning = (int) ($value ?? 0);
+
+                            if ($period > 0 && $warning >= $period) {
+                                $fail('Il pre-allarme deve essere minore della periodicità.');
+                            }
+                        };
+                    }),
+
                 TextInput::make('critical_after')
-                    ->required()
+                    ->label('Critico (giorni dopo scadenza)')
                     ->numeric()
-                    ->integer()
-                    ->minValue(1)
-                    ->gt('warning_after')
-                    ->validationMessages([
-                        'gt' => 'Il valore di critical_after deve essere maggiore di warning_after.',
-                    ]),
+                    ->minValue(0)
+                    ->default(fn () => config('security.default_critical_after'))
+                    ->required()
+                    ->helperText('Quanti giorni dopo la scadenza lo stato diventa NERO (grave).'),
+
                 Toggle::make('attiva')
                     ->default(true),
+
                 Select::make('tags')
                     ->relationship('tags', 'nome')
                     ->multiple()
@@ -93,11 +110,11 @@ class SecurityTaskResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('titolo')
-                    ->searchable(),
+                TextColumn::make('titolo')->searchable()->sortable(),
                 TextColumn::make('periodicita_giorni'),
-                IconColumn::make('attiva')
-                    ->boolean(),
+                TextColumn::make('warning_alert'),
+                TextColumn::make('critical_after'),
+                IconColumn::make('attiva')->boolean(),
             ])
             ->recordActions([
                 EditAction::make(),

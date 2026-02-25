@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $titolo
  * @property string|null $descrizione
  * @property int $periodicita_giorni
- * @property int $warning_after
+ * @property int $warning_alert
  * @property int $critical_after
  * @property bool $attiva
  * @property-read EloquentCollection<int, Tag> $tags
@@ -29,25 +29,22 @@ class SecurityTask extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'titolo',
-        'descrizione',
-        'periodicita_giorni',
-        'warning_after',
-        'critical_after',
-        'attiva',
+    'titolo',
+    'descrizione',
+    'periodicita_giorni',
+    'warning_alert',
+    'critical_after',
+    'attiva',
     ];
 
-    /**
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
-        return [
-            'periodicita_giorni' => 'integer',
-            'warning_after' => 'integer',
-            'critical_after' => 'integer',
-            'attiva' => 'boolean',
-        ];
+    return [
+        'periodicita_giorni' => 'integer',
+        'warning_alert' => 'integer',
+        'critical_after' => 'integer',
+        'attiva' => 'boolean',
+    ];
     }
 
     public function tags()

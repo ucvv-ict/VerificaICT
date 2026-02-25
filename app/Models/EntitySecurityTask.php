@@ -40,6 +40,7 @@ class EntitySecurityTask extends Model
     protected $appends = [
         'current_status',
         'days_from_last_check',
+        'priority_level',
     ];
 
     /**
@@ -53,6 +54,15 @@ class EntitySecurityTask extends Model
             'responsabile_user_id' => 'integer',
             'attiva' => 'boolean',
         ];
+    }
+
+    public function getPriorityLevelAttribute(): int
+    {
+        return match ($this->current_status) {
+            'rosso' => 3,
+            'arancione' => 2,
+            'verde' => 1,
+        };
     }
 
     public function entity(): BelongsTo
@@ -82,37 +92,77 @@ class EntitySecurityTask extends Model
 
     public function getCurrentStatusAttribute(): string
     {
-        // Se non è attiva, consideriamola comunque rossa
-        if (!$this->attiva) {
-            return 'rosso';
+        if (! $this->attiva) {
+            return 'nero';
+        }
+
+        if (! $this->latestCheck) {
+            return 'nero';
+        }
+
+        $esito = strtolower(trim((string) $this->latestCheck->esito));
+        if ($esito !== 'ok') {
+            return 'nero';
         }
 
         $task = $this->securityTask;
 
-        // Nessun controllo eseguito
-        if (!$this->latestCheck) {
-            return 'rosso';
-        }
+        $period = (int) $task->periodicita_giorni;
 
-        // Se l'ultimo esito non è "ok", lo stato è sempre rosso.
-        if ($this->latestCheck->esito !== 'ok') {
-            return 'rosso';
-        }
+        $warningAlert = (int) ($task->warning_alert
+            ?? config('security.default_warning_alert'));
 
-        $days = (int) $this->latestCheck->checked_at
+        $criticalAfter = (int) ($task->critical_after
+            ?? config('security.default_critical_after'));
+
+        $daysPassed = $this->latestCheck->checked_at
             ->startOfDay()
             ->diffInDays(now()->startOfDay());
 
-        if ($days <= $task->periodicita_giorni) {
+        // 🟢 prima della soglia warning
+        if ($daysPassed < ($period - $warningAlert)) {
             return 'verde';
         }
 
-        if ($days <= $task->warning_after) {
+        // 🟠 tra warning e scadenza
+        if ($daysPassed < $period) {
             return 'arancione';
         }
 
-        return 'rosso';
+        $daysOverdue = $daysPassed - $period;
+
+        // 🔴 scaduto ma non critico
+        if ($daysOverdue < $criticalAfter) {
+            return 'rosso';
+        }
+
+        // ⚫ oltre soglia critica
+        return 'nero';
     }
+
+
+public function getDaysToDeadlineAttribute(): ?int
+{
+    $lastCheck = $this->latestCheck?->checked_at;
+
+    if (! $lastCheck) {
+        return null;
+    }
+
+    $period = (int) ($this->securityTask->periodicita_giorni ?? 0);
+
+    if ($period <= 0) {
+        return null;
+    }
+
+    $deadline = $lastCheck->copy()
+        ->startOfDay()
+        ->addDays($period);
+
+    $today = now()->startOfDay();
+
+    return (int) $today->diffInDays($deadline, false);
+}
 
     public function getDaysFromLastCheckAttribute(): ?int
     {

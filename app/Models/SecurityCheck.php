@@ -32,7 +32,7 @@ class SecurityCheck extends Model
         'checked_at',
         'checked_by',
     ];
-
+    
     /**
      * @return array<string, string>
      */

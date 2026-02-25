@@ -5,20 +5,17 @@ declare(strict_types=1);
 namespace App\Filament\Widgets;
 
 use App\Models\EntitySecurityTask;
+use App\Models\SecurityCheck;
 use App\Models\User;
+use Filament\Widgets\TableWidget;
+use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\BadgeColumn;
-use Filament\Tables\Table;
-use Filament\Widgets\TableWidget;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
-use Filament\Tables\Filters\SelectFilter;
-
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use App\Models\SecurityCheck;
-
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 class OperatorTasksWidget extends TableWidget
 {
@@ -26,27 +23,22 @@ class OperatorTasksWidget extends TableWidget
 
     protected int | string | array $columnSpan = 'full';
 
+    /*
+    |--------------------------------------------------------------------------
+    | Query
+    |--------------------------------------------------------------------------
+    */
+
     protected function getTableQuery(): Builder
     {
         $query = EntitySecurityTask::query()
             ->where('attiva', true)
             ->with([
                 'entity:id,nome',
-                'securityTask:id,titolo',
+                'securityTask:id,titolo,periodicita_giorni,warning_alert,critical_after',
                 'responsabile:id,name',
                 'latestCheck',
-            ])
-            ->leftJoin('security_checks as sc', function ($join) {
-                $join->on('entity_security_tasks.id', '=', 'sc.entity_security_task_id')
-                    ->whereRaw('sc.checked_at = (
-                        select max(checked_at)
-                        from security_checks
-                        where entity_security_task_id = entity_security_tasks.id
-                    )');
-            })
-            ->select('entity_security_tasks.*')
-            ->orderByRaw('sc.checked_at IS NULL DESC') // MAI FATTO prima
-            ->orderBy('sc.checked_at', 'asc'); // più vecchi prima
+            ]);
 
         $user = auth()->user();
 
@@ -66,6 +58,35 @@ class OperatorTasksWidget extends TableWidget
         return $query;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Ordinamento per gravità reale
+    |--------------------------------------------------------------------------
+    */
+
+    public function getTableRecords(): Collection
+    {
+        $records = parent::getTableRecords();
+
+        return $records
+            ->sortByDesc(function ($record) {
+                return match ($record->current_status) {
+                    'nero' => 4,
+                    'rosso' => 3,
+                    'arancione' => 2,
+                    'verde' => 1,
+                    default => 0,
+                };
+            })
+            ->values();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Table
+    |--------------------------------------------------------------------------
+    */
+
     public function table(Table $table): Table
     {
         return $table
@@ -84,80 +105,63 @@ class OperatorTasksWidget extends TableWidget
                 BadgeColumn::make('current_status')
                     ->label('Stato')
                     ->formatStateUsing(fn ($state) => strtoupper($state))
-                    ->colors([
-                        'danger' => 'rosso',
-                        'warning' => 'arancione',
-                        'success' => 'verde',
-                    ]),
+                    ->color(function ($state) {
+                        return match ($state) {
+                            'verde' => 'success',
+                            'arancione' => 'warning',
+                            'rosso' => 'danger',
+                            'nero' => 'gray',
+                            default => 'gray',
+                        };
+                    }),
 
-                TextColumn::make('days_from_last_check')
-                    ->label('Giorni da ultimo check')
+                TextColumn::make('days_to_deadline')
+                    ->label('Scadenza')
                     ->formatStateUsing(function ($state) {
-                        return $state === null
-                            ? 'MAI FATTO'
-                            : $state;
+                        if ($state === null) {
+                            return 'MAI FATTO';
+                        }
+
+                        if ($state > 0) {
+                            return '-' . $state; // mancano giorni
+                        }
+
+                        if ($state === 0) {
+                            return 'OGGI';
+                        }
+
+                        return '+' . abs($state); // giorni di ritardo
                     })
                     ->color(function ($record) {
                         return match ($record->current_status) {
-                            'rosso' => 'danger',
-                            'arancione' => 'warning',
                             'verde' => 'success',
+                            'arancione' => 'warning',
+                            'rosso' => 'danger',
+                            'nero' => 'gray',
+                            default => 'gray',
                         };
-                    }),
+                    })
+                    ->sortable(),
 
                 TextColumn::make('responsabile.name')
                     ->label('Responsabile')
                     ->searchable()
                     ->sortable(),
             ])
-            ->filters([
-                SelectFilter::make('status')
-                    ->label('Filtra per stato')
-                    ->options([
-                        'rosso' => 'Solo critiche',
-                        'arancione' => 'In scadenza',
-                        'verde' => 'Regolari',
-                    ])
-                    ->query(function (Builder $query, array $data) {
 
-                        if (! $data['value']) {
-                            return;
-                        }
+            /*
+            |--------------------------------------------------------------------------
+            | Action: Registra check
+            |--------------------------------------------------------------------------
+            */
 
-                        $status = $data['value'];
-
-                        $query->where(function ($q) use ($status) {
-
-                            if ($status === 'rosso') {
-                                $q->where(function ($sub) {
-                                    $sub->whereDoesntHave('latestCheck')
-                                        ->orWhereHas('latestCheck', fn ($c) =>
-                                            $c->where('esito', '!=', 'ok')
-                                        );
-                                });
-                            }
-
-                            if ($status === 'arancione') {
-                                $q->whereHas('latestCheck', function ($c) {
-                                    $c->where('esito', 'ok');
-                                });
-                            }
-
-                            if ($status === 'verde') {
-                                $q->whereHas('latestCheck', function ($c) {
-                                    $c->where('esito', 'ok');
-                                });
-                            }
-                        });
-                    }),
-            ])
             ->recordActions([
                 Action::make('registra_check')
                     ->label('Registra check')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->form([
-                        \Filament\Forms\Components\Select::make('esito')
+                        Select::make('esito')
                             ->label('Esito')
                             ->options([
                                 'ok' => 'OK',
@@ -165,23 +169,34 @@ class OperatorTasksWidget extends TableWidget
                             ])
                             ->required(),
 
-                        \Filament\Forms\Components\Textarea::make('note')
+                        Textarea::make('note')
                             ->label('Note')
                             ->rows(3),
                     ])
                     ->action(function (EntitySecurityTask $record, array $data) {
-                        \App\Models\SecurityCheck::create([
+                        SecurityCheck::create([
                             'entity_security_task_id' => $record->id,
                             'checked_at' => now(),
                             'esito' => $data['esito'],
                             'note' => $data['note'] ?? null,
-                            'checked_by' => auth()->id(), // 🔥 AGGIUNGI QUESTO
+                            'checked_by' => auth()->id(),
                         ]);
+                    })
+                    ->after(function () {
+                        $this->dispatch('$refresh');
                     })
                     ->modalHeading('Registra nuovo controllo')
                     ->modalSubmitActionLabel('Salva'),
             ])
+
+            /*
+            |--------------------------------------------------------------------------
+            | Evidenziazione righe
+            |--------------------------------------------------------------------------
+            */
+
             ->recordClasses(fn ($record) => match ($record->current_status) {
+                'nero' => 'row-critical-black',
                 'rosso' => 'row-critical',
                 'arancione' => 'row-warning',
                 default => null,
