@@ -2,3 +2,16 @@
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
+
+/* Operator dashboard row highlight */
+tr.row-critical > td {
+    background: #fef2f2 !important; /* red-50 */
+}
+
+tr.row-warning > td {
+    background: #fefce8 !important; /* yellow-50 */
+}
+
+tr.row-critical-black > td {
+    background: #ededed !important; /* gray */
+}
