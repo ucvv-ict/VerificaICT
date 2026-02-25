@@ -8,6 +8,20 @@ Il progetto segue (in modo leggero) il versioning semantico:
 - PATCH: fix e miglioramenti minori
 
 ---
+## [0.12.0] - 2026-02-25
+
+### Added
+- Nuova logica scadenze basata su `warning_alert` (prima della scadenza)
+- Nuova soglia `critical_after` (post-scadenza grave)
+- Accessor `days_to_deadline`
+- Colonna “Scadenza” nella dashboard operatore
+- Ordinamento per gravità reale (nero > rosso > arancione > verde)
+
+### Changed
+- Rimossa logica warning_after legacy
+- Dashboard operator coerente con model
+- Styling righe con left border severity
+
 ## [0.11.0] - 2026-02-XX
 
 ### Added
