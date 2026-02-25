@@ -19,7 +19,7 @@ class SecurityCheckReminders extends Command
             ->where('attiva', true)
             ->with([
                 'entity:id,nome',
-                'securityTask:id,periodicita_giorni,warning_after',
+                'securityTask:id,periodicita_giorni,warning_alert',
                 'latestCheck',
             ])
             ->get(['id', 'entity_id', 'security_task_id', 'attiva'])

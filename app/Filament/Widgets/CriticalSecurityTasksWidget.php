@@ -49,7 +49,7 @@ class CriticalSecurityTasksWidget extends TableWidget
             ->where('attiva', true)
             ->with([
                 'entity:id,nome',
-                'securityTask:id,titolo,periodicita_giorni,warning_after',
+                'securityTask:id,titolo,periodicita_giorni,warning_alert',
                 'responsabile:id,name',
                 'latestCheck',
             ])

@@ -27,6 +27,7 @@ class SecurityOverviewWidget extends StatsOverviewWidget
             'rosso' => $records->where('current_status', 'rosso')->count(),
             'arancione' => $records->where('current_status', 'arancione')->count(),
             'verde' => $records->where('current_status', 'verde')->count(),
+            'nero' => $records->where('current_status', 'nero')->count(),
         ];
 
         return [
@@ -39,6 +40,9 @@ class SecurityOverviewWidget extends StatsOverviewWidget
             Stat::make('Attivita VERDI', $counts['verde'])
                 ->color('success')
                 ->url($this->getFilteredListUrl('verde')),
+            Stat::make('Attivita NERE', $counts['nero'])
+                ->color('success')
+                ->url($this->getFilteredListUrl('nero')),
         ];
     }
 
@@ -58,7 +62,7 @@ class SecurityOverviewWidget extends StatsOverviewWidget
         $query = EntitySecurityTask::query()
             ->where('attiva', true)
             ->with([
-                'securityTask:id,periodicita_giorni,warning_after',
+                'securityTask:id,periodicita_giorni,warning_alert',
                 'latestCheck',
             ])
             ->select(['id', 'entity_id', 'security_task_id', 'attiva']);
