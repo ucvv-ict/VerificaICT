@@ -34,6 +34,7 @@ class SecurityTask extends Model
     'periodicita_giorni',
     'warning_alert',
     'critical_after',
+    'priorita',
     'attiva',
     ];
 
@@ -43,9 +44,15 @@ class SecurityTask extends Model
         'periodicita_giorni' => 'integer',
         'warning_alert' => 'integer',
         'critical_after' => 'integer',
+        'priorita' => 'integer',
         'attiva' => 'boolean',
     ];
     }
+
+    public function getPrioritaStarsAttribute(): string
+    {
+        return str_repeat('⭐', $this->priorita);
+    }    
 
     public function tags()
     {

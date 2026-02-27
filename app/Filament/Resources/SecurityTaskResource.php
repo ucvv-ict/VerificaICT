@@ -60,6 +60,16 @@ class SecurityTaskResource extends Resource
                     ->nullable()
                     ->columnSpanFull(),
 
+                Select::make('priorita')
+                    ->label('Priorità')
+                    ->options([
+                        1 => 'Bassa (★)',
+                        2 => 'Media (★★)',
+                        3 => 'Alta (★★★)',
+                    ])
+                    ->default(2)
+                    ->required(),
+
                 TextInput::make('periodicita_giorni')
                     ->label('Periodicità (giorni)')
                     ->numeric()

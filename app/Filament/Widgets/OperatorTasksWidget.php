@@ -102,6 +102,11 @@ class OperatorTasksWidget extends TableWidget
                     ->searchable()
                     ->sortable(),
 
+                TextColumn::make('priorita')
+                    ->label('Priorità')
+                    ->formatStateUsing(fn ($state) => str_repeat('⭐', $state))
+                    ->sortable(),
+
                 BadgeColumn::make('current_status')
                     ->label('Stato')
                     ->formatStateUsing(fn ($state) => strtoupper($state))
