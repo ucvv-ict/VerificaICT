@@ -6,23 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('security_tasks', function (Blueprint $table) {
-            //
+            $table->string('documentation_url')->nullable()->after('priorita');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('security_tasks', function (Blueprint $table) {
-            //
+            $table->dropColumn('documentation_url');
         });
     }
 };
