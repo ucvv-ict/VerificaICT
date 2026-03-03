@@ -8,9 +8,7 @@ Route::get('/', function () {
         return redirect('/admin/login');
     }
 
-    return auth()->user()->isAdmin()
-        ? redirect('/admin')
-        : redirect('/operatore');
+    return redirect('/admin');
 });
 
 
@@ -18,8 +16,9 @@ Route::middleware(['auth', 'operator'])
     ->prefix('operatore')
     ->group(function () {
 
-        Route::get('/', [\App\Http\Controllers\OperatorDashboardController::class, 'index'])
-            ->name('operator.dashboard');
+        Route::get('/', function () {
+            return redirect('/admin');
+        })->name('operator.dashboard');
 
         Route::get('/check/{entitySecurityTask}', [\App\Http\Controllers\OperatorCheckController::class, 'show'])
             ->name('operator.check.show');
