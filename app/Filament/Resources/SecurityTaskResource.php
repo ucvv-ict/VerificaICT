@@ -23,6 +23,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use App\Filament\Resources\SecurityTaskResource\RelationManagers\DocumentsRelationManager;
 
 class SecurityTaskResource extends Resource
 {
@@ -59,6 +60,11 @@ class SecurityTaskResource extends Resource
                 Textarea::make('descrizione')
                     ->nullable()
                     ->columnSpanFull(),
+
+                TextInput::make('documentation_url')
+                    ->label('URL documentazione')
+                    ->url()
+                    ->nullable(),
 
                 Select::make('priorita')
                     ->label('Priorità')
@@ -134,7 +140,9 @@ class SecurityTaskResource extends Resource
 
     public static function getRelations(): array
     {
-        return [];
+        return [
+            DocumentsRelationManager::class,
+        ];
     }
 
     public static function getPages(): array

@@ -264,19 +264,12 @@ protected function getTableQuery(): Builder
             ])
 
             ->recordActions([
-                Action::make('registra_check')
-                    ->label('Registra check')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
-                    ->form([
-                        Select::make('esito')
-                            ->label('Esito')
-                            ->options([
-                                'ok' => 'OK',
-                                'ko' => 'Non conforme',
-                            ])
-                            ->required(),
 
+                Action::make('ok')
+                    ->label('OK')
+                    ->color('success')
+                    ->icon('heroicon-o-check')
+                    ->form([
                         Textarea::make('note')
                             ->label('Note')
                             ->rows(3),
@@ -285,15 +278,33 @@ protected function getTableQuery(): Builder
                         SecurityCheck::create([
                             'entity_security_task_id' => $record->id,
                             'checked_at' => now(),
-                            'esito' => $data['esito'],
+                            'esito' => 'ok',
                             'note' => $data['note'] ?? null,
                             'checked_by' => auth()->id(),
                         ]);
-                    })
-                    ->after(fn () => $this->dispatch('$refresh'))
-                    ->modalHeading('Registra nuovo controllo')
-                    ->modalSubmitActionLabel('Salva'),
-            ])
+                    }),
+
+                Action::make('ko')
+                    ->label('KO')
+                    ->color('danger')
+                    ->icon('heroicon-o-x-mark')
+                    ->form([
+                        Textarea::make('note')
+                            ->label('Motivazione')
+                            ->required()
+                            ->rows(3),
+                    ])
+                    ->action(function (EntitySecurityTask $record, array $data) {
+                        SecurityCheck::create([
+                            'entity_security_task_id' => $record->id,
+                            'checked_at' => now(),
+                            'esito' => 'ko',
+                            'note' => $data['note'],
+                            'checked_by' => auth()->id(),
+                        ]);
+                    }),
+
+            ])            
 
             ->recordClasses(fn ($record) => match ($record->current_status) {
                 'nero' => 'row-critical-black',
