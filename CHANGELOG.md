@@ -8,6 +8,27 @@ Il progetto segue (in modo leggero) il versioning semantico:
 - PATCH: fix e miglioramenti minori
 
 ---
+## [v0.13.0] - 2026-03-03
+
+### Added
+- Campo `priorita` (1–3) nel modello `SecurityTask`
+- Visualizzazione priorità nel widget Operatore con stelle (★☆☆ → ★★★)
+- Filtro rapido per priorità nel widget Operatore
+- Filtro per stato (verde, arancione, rosso, nero) coerente con logica `current_status`
+- Link diretto alla `SecurityTask` dalla dashboard Operatore (apertura in nuova scheda)
+
+### Improved
+- Ordinamento dashboard stile monitoring professionale:
+  - Priorità alta prima
+  - Stato critico prima
+  - Ordinamento stabile
+- Paginazione configurabile (10 / 25 / 50 / 100) nel `OperatorTasksWidget`
+
+### Fixed
+- Correzione ordinamento su attributi calcolati (rimozione accessor in SQL)
+- Correzione ambiguità colonne dopo JOIN
+- Stabilizzazione filtri con SQL puro (rimozione placeholder errati)
+
 ## [0.12.0] - 2026-02-25
 
 ### Added
