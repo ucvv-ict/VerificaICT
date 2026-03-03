@@ -7,6 +7,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\SecurityTaskResource\Pages\CreateSecurityTask;
 use App\Filament\Resources\SecurityTaskResource\Pages\EditSecurityTask;
 use App\Filament\Resources\SecurityTaskResource\Pages\ListSecurityTasks;
+use App\Filament\Resources\SecurityTaskResource\Pages\ViewSecurityTask;
 use App\Models\SecurityTask;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
@@ -149,6 +150,7 @@ class SecurityTaskResource extends Resource
     {
         return [
             'index' => ListSecurityTasks::route('/'),
+            'view' => ViewSecurityTask::route('/{record}'),
             'create' => CreateSecurityTask::route('/create'),
             'edit' => EditSecurityTask::route('/{record}/edit'),
         ];
