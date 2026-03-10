@@ -35,6 +35,7 @@ class EntitySecurityTask extends Model
         'security_task_id',
         'responsabile_user_id',
         'attiva',
+        'descrizione_specifica'
     ];
 
     protected $appends = [
@@ -62,6 +63,8 @@ class EntitySecurityTask extends Model
             'rosso' => 3,
             'arancione' => 2,
             'verde' => 1,
+            'nero' => 4,
+            default => 0,
         };
     }
 

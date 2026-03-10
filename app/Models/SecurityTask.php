@@ -54,6 +54,11 @@ class SecurityTask extends Model
         return str_repeat('⭐', $this->priorita);
     }    
 
+    public function documents()
+    {
+        return $this->hasMany(SecurityTaskDocument::class);
+    }
+
     public function tags()
     {
         return $this->belongsToMany(Tag::class);

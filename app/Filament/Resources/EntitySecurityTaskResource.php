@@ -24,6 +24,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rules\Unique;
+use Filament\Forms\Components\Textarea;
 
 class EntitySecurityTaskResource extends Resource
 {
@@ -69,11 +70,20 @@ class EntitySecurityTaskResource extends Resource
                         ignoreRecord: true,
                         modifyRuleUsing: fn (Unique $rule, Get $get): Unique => $rule->where('entity_id', $get('entity_id')),
                     ),
+
+                Textarea::make('descrizione_specifica')
+                    ->label('Descrizione specifica per questo ente')
+                    ->rows(4)
+                    ->columnSpanFull()
+                    ->helperText('Sovrascrive o integra la descrizione generale del Security Task.')
+                    ->nullable(),
+
                 Select::make('responsabile_user_id')
                     ->relationship('responsabile', 'name')
                     ->nullable()
                     ->searchable()
                     ->preload(),
+
                 Toggle::make('attiva')
                     ->default(true),
             ]);
@@ -96,6 +106,11 @@ class EntitySecurityTaskResource extends Resource
                 TextColumn::make('days_from_last_check')
                     ->label('Giorni da ultimo check')
                     ->formatStateUsing(fn (?int $state): string => $state === null ? '—' : (string) $state),
+
+                TextColumn::make('descrizione_specifica')
+                    ->limit(40)
+                    ->tooltip(fn ($record) => $record->descrizione_specifica),
+
                 IconColumn::make('attiva')
                     ->boolean(),
             ])
