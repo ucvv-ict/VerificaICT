@@ -70,6 +70,9 @@ class AdminPanelProvider extends PanelProvider
 
             ->pages([
                 \App\Filament\Pages\MainDashboard::class,
+                \App\Filament\Pages\TwoFactorSetup::class,
+                \App\Filament\Pages\TwoFactorChallenge::class,
+                \App\Filament\Pages\FirstLoginPasswordChange::class,
             ])
 
             ->homeUrl(fn () => \App\Filament\Pages\MainDashboard::getUrl())
