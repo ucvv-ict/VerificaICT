@@ -15,7 +15,6 @@ use Filament\Tables\Columns\BadgeColumn;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Textarea;
 use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Resources\SecurityTaskResource;
 
 class OperatorTasksWidget extends TableWidget
 {
@@ -141,17 +140,6 @@ class OperatorTasksWidget extends TableWidget
             ])
 
             ->recordActions([
-
-            Action::make('view')
-                ->label('View')
-                ->icon('heroicon-o-eye')
-                ->color('gray')
-                ->url(fn (EntitySecurityTask $record) =>
-                    SecurityTaskResource::getUrl('view', [
-                        'record' => $record->security_task_id,
-                    ])
-                )
-                ->openUrlInNewTab(),
 
                 /*
                 |--------------------------------------------------------------------------
