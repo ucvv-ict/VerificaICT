@@ -28,7 +28,7 @@ class ForceTwoFactorSetup
             return $next($request);
         }
 
-        $panel = Filament::getCurrentPanel();
+        $panel = Filament::getCurrentPanel() ?? Filament::getPanel('admin');
 
         // 🔹 Route base auth Filament
         $loginRouteName = $panel?->generateRouteName('auth.login');

@@ -190,6 +190,15 @@ class SecurityTaskResource extends Resource
         ];
     }
 
+    public static function canAccess(): bool
+    {
+        return true;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return true;
+    }
     public static function canCreate(): bool
     {
         return true;

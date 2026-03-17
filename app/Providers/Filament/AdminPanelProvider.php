@@ -88,8 +88,8 @@ class AdminPanelProvider extends PanelProvider
 
             ->authMiddleware([
                 Authenticate::class,
-                ForcePasswordChange::class,
-                ForceTwoFactorSetup::class,
+                //ForcePasswordChange::class,
+                //ForceTwoFactorSetup::class,
             ]);
     }
 }
