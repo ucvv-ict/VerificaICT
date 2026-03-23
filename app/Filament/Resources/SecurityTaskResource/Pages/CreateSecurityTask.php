@@ -11,16 +11,4 @@ class CreateSecurityTask extends CreateRecord
 {
     protected static string $resource = SecurityTaskResource::class;
 
-    protected function afterCreate(): void
-    {
-        $entityIds = $this->form->getState()['entities'] ?? [];
-
-        foreach ($entityIds as $entityId) {
-            \App\Models\EntitySecurityTask::create([
-                'entity_id' => $entityId,
-                'security_task_id' => $this->record->id,
-                'attiva' => true,
-            ]);
-        }
-    }    
 }

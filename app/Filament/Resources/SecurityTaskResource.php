@@ -182,12 +182,14 @@ class SecurityTaskResource extends Resource
 
     public static function getPages(): array
     {
-        return [
-            'index' => ListSecurityTasks::route('/'),
-            'view' => ViewSecurityTask::route('/{record}'),
-            'create' => CreateSecurityTask::route('/create'),
-            'edit' => EditSecurityTask::route('/{record}/edit'),
-        ];
+
+    return [
+        'index' => ListSecurityTasks::route('/'),
+        'create' => CreateSecurityTask::route('/create'),
+        'view' => ViewSecurityTask::route('/{record}'),
+        'edit' => EditSecurityTask::route('/{record}/edit'),
+    ];
+
     }
 
     public static function canAccess(): bool

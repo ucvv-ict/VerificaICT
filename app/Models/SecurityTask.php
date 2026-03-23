@@ -68,4 +68,19 @@ class SecurityTask extends Model
     {
         return $this->hasMany(EntitySecurityTask::class);
     }
+
+    protected static function booted()
+    {
+        static::created(function ($task) {
+            $entityIds = request()->input('data.entities', []);
+
+            foreach ($entityIds as $entityId) {
+                EntitySecurityTask::create([
+                    'entity_id' => $entityId,
+                    'security_task_id' => $task->id,
+                    'attiva' => true,
+                ]);
+            }
+        });
+    }
 }
