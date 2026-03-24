@@ -23,6 +23,10 @@ class ForcePasswordChange
 
         $panel = Filament::getCurrentPanel();
 
+        if (! $panel) {
+            return $next($request); // 👈 evita bug
+        }
+
         $loginRoute = $panel?->generateRouteName('auth.login');
         $logoutRoute = $panel?->generateRouteName('auth.logout');
         $changePasswordRoute = FirstLoginPasswordChange::getRouteName($panel);
