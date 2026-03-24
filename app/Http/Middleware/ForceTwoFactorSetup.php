@@ -53,10 +53,13 @@ class ForceTwoFactorSetup
             return $next($request);
         }
 
-        // 🔹 Se 2FA NON configurato → vai a setup
+        if ($user->mustChangePassword()) {
+            return $next($request);
+        }
+
         if (! $user->hasConfiguredTwoFactor()) {
             return redirect()->to(
-                TwoFactorSetup::getUrl(panel: $panel?->getId())
+                TwoFactorSetup::getUrl(panel: $panel->getId())
             );
         }
 
