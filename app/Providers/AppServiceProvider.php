@@ -21,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $forwardedProto = request()->header('x-forwarded-proto');
-        \Log::info('DEBUG: x-forwarded-proto=' . ($forwardedProto ?? 'null'));
+        \Log::info('DEBUG: x-forwarded-proto=' . ($forwardedProto ?? 'null')); 
         
         if (config('app.force_https')) {
             URL::forceScheme('https');
