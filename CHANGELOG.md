@@ -8,6 +8,16 @@ Il progetto segue (in modo leggero) il versioning semantico:
 - PATCH: fix e miglioramenti minori
 
 ---
+## [v0.14.0] - 2026-04-03
+
+### Added
+- TrustProxies middleware per gestire gli header inoltrati dai proxy
+- Configurazione `force_https` per forzare lo schema HTTPS negli URL
+- Impostazione automatica della variabile server HTTPS basata sull'header `x-forwarded-proto`
+
+### Security
+- Miglioramento della gestione delle richieste proxy per ambienti di produzione
+
 ## [v0.13.0] - 2026-03-03
 
 ### Added
