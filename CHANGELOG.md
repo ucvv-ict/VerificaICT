@@ -15,6 +15,9 @@ Il progetto segue (in modo leggero) il versioning semantico:
 - Configurazione `force_https` per forzare lo schema HTTPS negli URL
 - Impostazione automatica della variabile server HTTPS basata sull'header `x-forwarded-proto`
 
+### Fixed
+- Correzione costante indefinita in TrustProxies middleware (utilizzo bitwise OR per headers)
+
 ### Security
 - Miglioramento della gestione delle richieste proxy per ambienti di produzione
 
