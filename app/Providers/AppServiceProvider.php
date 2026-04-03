@@ -23,5 +23,9 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.force_https')) {
             URL::forceScheme('https');
         }
+
+        if (config('app.force_https') && request()->header('x-forwarded-proto') === 'https') {
+            request()->server->set('HTTPS', 'on');
+        }
     }
 }
