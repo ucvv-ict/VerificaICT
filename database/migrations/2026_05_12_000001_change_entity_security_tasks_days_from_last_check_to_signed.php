@@ -9,16 +9,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('entity_security_tasks', function (Blueprint $table) {
-            $table->text('descrizione_specifica')
+            $table->integer('days_from_last_check')
                 ->nullable()
-                ->after('attiva');
+                ->change();
         });
     }
 
     public function down(): void
     {
         Schema::table('entity_security_tasks', function (Blueprint $table) {
-            $table->dropColumn('descrizione_specifica');
+            $table->unsignedInteger('days_from_last_check')
+                ->nullable()
+                ->change();
         });
     }
 };

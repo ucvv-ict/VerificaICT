@@ -17,13 +17,9 @@ class SecurityCheckReminders extends Command
     {
         $records = EntitySecurityTask::query()
             ->where('attiva', true)
-            ->with([
-                'entity:id,nome',
-                'securityTask:id,periodicita_giorni,warning_alert',
-                'latestCheck',
-            ])
-            ->get(['id', 'entity_id', 'security_task_id', 'attiva'])
-            ->filter(fn (EntitySecurityTask $record): bool => in_array($record->current_status, ['arancione', 'rosso'], true));
+            ->whereIn('current_status', ['arancione', 'rosso'])
+            ->with(['entity:id,nome'])
+            ->get(['id', 'entity_id', 'current_status']);
 
         if ($records->isEmpty()) {
             $this->info('Nessuna attività ARANCIONE o ROSSA trovata.');

@@ -10,5 +10,4 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateSecurityTask extends CreateRecord
 {
     protected static string $resource = SecurityTaskResource::class;
-
 }

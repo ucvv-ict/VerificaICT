@@ -16,35 +16,27 @@ class OperatorDashboardController extends Controller
         $query = EntitySecurityTask::with([
             'entity',
             'securityTask.tags',
-            'latestCheck.user'
+            'latestCheck.user',
         ])
-        ->whereIn('entity_id', $entityIds)
-        ->where('attiva', true);
+            ->whereIn('entity_id', $entityIds)
+            ->where('attiva', true);
 
         // Filtro ente
         if ($request->filled('entity')) {
             $query->where('entity_id', $request->entity);
         }
 
-        $tasks = $query->get();
-
-        // Filtro per tag
         if ($request->filled('tag')) {
-            $tasks = $tasks->filter(function ($task) use ($request) {
-                return $task->securityTask->tags
-                    ->pluck('id')
-                    ->contains($request->tag);
+            $query->whereHas('securityTask.tags', function ($tagQuery) use ($request) {
+                $tagQuery->where('tags.id', $request->tag);
             });
         }
 
-        // Filtro per stato
         if ($request->filled('status')) {
-
-            $tasks = $tasks->filter(function ($task) use ($request) {
-                return $task->current_status === $request->status;
-            });
-
+            $query->where('current_status', $request->status);
         }
+
+        $tasks = $query->get();
 
         $grouped = $tasks->groupBy('current_status');
 

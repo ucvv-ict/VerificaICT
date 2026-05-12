@@ -2,8 +2,14 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use App\Models\EntitySecurityTask;
+use App\Models\SecurityCheck;
+use App\Models\SecurityTask;
+use App\Observers\EntitySecurityTaskObserver;
+use App\Observers\SecurityCheckObserver;
+use App\Observers\SecurityTaskObserver;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,9 +26,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $forwardedProto = request()->header('x-forwarded-proto');
-        \Log::info('DEBUG: x-forwarded-proto=' . ($forwardedProto ?? 'null')); 
-        
         if (config('app.force_https')) {
             URL::forceScheme('https');
         }
@@ -30,5 +33,9 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.force_https') && request()->header('x-forwarded-proto') === 'https') {
             request()->server->set('HTTPS', 'on');
         }
+
+        EntitySecurityTask::observe(EntitySecurityTaskObserver::class);
+        SecurityCheck::observe(SecurityCheckObserver::class);
+        SecurityTask::observe(SecurityTaskObserver::class);
     }
 }

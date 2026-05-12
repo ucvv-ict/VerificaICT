@@ -25,8 +25,6 @@ use Filament\Tables\Table;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use App\Filament\Resources\SecurityTaskResource\RelationManagers\DocumentsRelationManager;
-use Filament\Forms\Components\CheckboxList;
-use App\Models\Entity;
 
 class SecurityTaskResource extends Resource
 {
@@ -122,39 +120,7 @@ class SecurityTaskResource extends Resource
                     ->multiple()
                     ->searchable()
                     ->preload(),
-
-                CheckboxList::make('entities')
-                    ->label('Assegna agli enti')
-                    ->options(function () {
-
-                        $user = auth()->user();
-
-                        if (! $user) {
-                            return [];
-                        }
-
-                        return $user
-                            ->entities()
-                            ->orderBy('entities.nome')
-                            ->pluck('entities.nome', 'entities.id')
-                            ->toArray();
-                    })
-                    ->afterStateHydrated(function ($component, $state, $record) {
-
-                        if (! $record) {
-                            return;
-                        }
-
-                        $entityIds = \App\Models\EntitySecurityTask::where(
-                            'security_task_id',
-                            $record->id
-                        )->pluck('entity_id')->toArray();
-
-                        $component->state($entityIds);
-                    })
-                    ->columnSpanFull()
-                    ->columns(5),
-                    ]);
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -182,14 +148,12 @@ class SecurityTaskResource extends Resource
 
     public static function getPages(): array
     {
-
-    return [
-        'index' => ListSecurityTasks::route('/'),
-        'create' => CreateSecurityTask::route('/create'),
-        'view' => ViewSecurityTask::route('/{record}'),
-        'edit' => EditSecurityTask::route('/{record}/edit'),
-    ];
-
+        return [
+            'index' => ListSecurityTasks::route('/'),
+            'create' => CreateSecurityTask::route('/create'),
+            'view' => ViewSecurityTask::route('/{record}'),
+            'edit' => EditSecurityTask::route('/{record}/edit'),
+        ];
     }
 
     public static function canAccess(): bool
@@ -204,5 +168,5 @@ class SecurityTaskResource extends Resource
     public static function canCreate(): bool
     {
         return true;
-    }    
+    }
 }

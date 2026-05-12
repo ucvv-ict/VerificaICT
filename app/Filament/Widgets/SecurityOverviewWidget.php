@@ -21,14 +21,7 @@ class SecurityOverviewWidget extends StatsOverviewWidget
      */
     protected function getStats(): array
     {
-        $records = $this->getScopedRecords();
-
-        $counts = [
-            'rosso' => $records->where('current_status', 'rosso')->count(),
-            'arancione' => $records->where('current_status', 'arancione')->count(),
-            'verde' => $records->where('current_status', 'verde')->count(),
-            'nero' => $records->where('current_status', 'nero')->count(),
-        ];
+        $counts = $this->getStatusCounts();
 
         return [
             Stat::make('Attivita ROSSE', $counts['rosso'])
@@ -41,7 +34,7 @@ class SecurityOverviewWidget extends StatsOverviewWidget
                 ->color('success')
                 ->url($this->getFilteredListUrl('verde')),
             Stat::make('Attivita NERE', $counts['nero'])
-                ->color('success')
+                ->color('secondary')
                 ->url($this->getFilteredListUrl('nero')),
         ];
     }
@@ -57,20 +50,20 @@ class SecurityOverviewWidget extends StatsOverviewWidget
         ]);
     }
 
-    private function getScopedRecords(): Collection
+    private function getStatusCounts(): array
     {
         $query = EntitySecurityTask::query()
-            ->where('attiva', true)
-            ->with([
-                'securityTask:id,periodicita_giorni,warning_alert',
-                'latestCheck',
-            ])
-            ->select(['id', 'entity_id', 'security_task_id', 'attiva']);
+            ->where('attiva', true);
 
         $user = auth()->user();
 
         if (! $user instanceof User) {
-            return collect();
+            return [
+                'rosso' => 0,
+                'arancione' => 0,
+                'verde' => 0,
+                'nero' => 0,
+            ];
         }
 
         if ($this->shouldRestrictToAssignedEntities($user)) {
@@ -78,7 +71,18 @@ class SecurityOverviewWidget extends StatsOverviewWidget
             $query->whereIn('entity_id', $entityIds);
         }
 
-        return $query->get();
+        $counts = $query
+            ->selectRaw('current_status, COUNT(*) AS total')
+            ->groupBy('current_status')
+            ->pluck('total', 'current_status')
+            ->toArray();
+
+        return [
+            'rosso' => $counts['rosso'] ?? 0,
+            'arancione' => $counts['arancione'] ?? 0,
+            'verde' => $counts['verde'] ?? 0,
+            'nero' => $counts['nero'] ?? 0,
+        ];
     }
 
     private function isAdmin(User $user): bool
