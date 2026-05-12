@@ -87,6 +87,8 @@ class EntitySecurityTaskResource extends Resource
                 TextColumn::make('securityTask.titolo')->searchable()->sortable(),
                 BadgeColumn::make('current_status')
                     ->label('Stato')
+                    ->searchable()
+                    ->sortable()
                     ->color(fn (string $state): string => match ($state) {
                         'nero' => 'gray',
                         'verde' => 'success',
@@ -95,7 +97,19 @@ class EntitySecurityTaskResource extends Resource
                     }),
                 TextColumn::make('days_from_last_check')
                     ->label('Giorni da ultimo check')
+                    ->sortable()
                     ->formatStateUsing(fn (?int $state): string => $state === null ? '—' : (string) $state),
+                TextColumn::make('last_check_at')
+                    ->label('Ultimo check')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable(),
+                TextColumn::make('next_due_at')
+                    ->label('Prossima scadenza')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable(),
+                TextColumn::make('last_check_result')
+                    ->label('Esito ultimo check')
+                    ->sortable(),
                 IconColumn::make('attiva')
                     ->boolean(),
             ])
@@ -117,21 +131,11 @@ class EntitySecurityTaskResource extends Resource
                         'nero' => 'nero',
                     ])
                     ->query(function (Builder $query, array $data): void {
-                        $status = $data['value'] ?? null;
+                        $value = $data['value'] ?? null;
 
-                        if (blank($status)) {
-                            return;
+                        if (! blank($value)) {
+                            $query->where('current_status', $value);
                         }
-
-                        $ids = static::getIdsForStatus($status);
-
-                        if ($ids === []) {
-                            $query->whereRaw('1 = 0');
-
-                            return;
-                        }
-
-                        $query->whereIn('id', $ids);
                     }),
             ])
             ->recordActions([
@@ -152,21 +156,5 @@ class EntitySecurityTaskResource extends Resource
             'create' => CreateEntitySecurityTask::route('/create'),
             'edit' => EditEntitySecurityTask::route('/{record}/edit'),
         ];
-    }
-
-    /**
-     * @return array<int, int>
-     */
-    protected static function getIdsForStatus(string $status): array
-    {
-        return EntitySecurityTask::query()
-            ->with([
-                'securityTask:id,periodicita_giorni,warning_alert',
-                'latestCheck',
-            ])
-            ->get(['id', 'security_task_id', 'attiva'])
-            ->filter(fn (EntitySecurityTask $record): bool => $record->current_status === $status)
-            ->pluck('id')
-            ->all();
     }
 }

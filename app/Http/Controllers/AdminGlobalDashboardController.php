@@ -15,26 +15,17 @@ class AdminGlobalDashboardController extends Controller
 
         foreach ($entities as $entity) {
 
-            $tasks = EntitySecurityTask::with('latestCheck', 'securityTask')
+            $counts = EntitySecurityTask::query()
                 ->where('entity_id', $entity->id)
                 ->where('attiva', true)
-                ->get();
+                ->selectRaw('current_status, COUNT(*) AS total')
+                ->groupBy('current_status')
+                ->pluck('total', 'current_status');
 
-            $critici = 0;
-            $warning = 0;
-            $ok = 0;
-
-            foreach ($tasks as $task) {
-
-                $status = $task->current_status;
-
-                if ($status === 'rosso') $critici++;
-                elseif ($status === 'arancione') $warning++;
-                elseif ($status === 'verde') $ok++;
-                
-            }
-
-            $totale = $tasks->count();
+            $critici = $counts['rosso'] ?? 0;
+            $warning = $counts['arancione'] ?? 0;
+            $ok = $counts['verde'] ?? 0;
+            $totale = array_sum($counts->toArray());
             $percentuale = $totale > 0
                 ? round(($ok / $totale) * 100)
                 : 0;

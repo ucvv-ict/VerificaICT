@@ -13,5 +13,6 @@ class Kernel extends ConsoleKernel
     {
         // Esegue ogni mattina il controllo promemoria (solo output/log, nessuna email).
         $schedule->command('security:check-reminders')->dailyAt('08:00');
+        $schedule->command('security:recalculate-task-statuses')->dailyAt('02:00');
     }
 }

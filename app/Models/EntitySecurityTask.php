@@ -17,6 +17,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $security_task_id
  * @property int|null $responsabile_user_id
  * @property bool $attiva
+ * @property string|null $current_status
+ * @property int|null $days_from_last_check
+ * @property \Illuminate\Support\Carbon|null $last_check_at
+ * @property \Illuminate\Support\Carbon|null $next_due_at
+ * @property string|null $last_check_result
  * @property-read Entity $entity
  * @property-read SecurityTask $securityTask
  * @property-read User|null $responsabile
@@ -37,12 +42,6 @@ class EntitySecurityTask extends Model
         'attiva',
     ];
 
-    protected $appends = [
-        'current_status',
-        'days_from_last_check',
-        'priority_level',
-    ];
-
     /**
      * @return array<string, string>
      */
@@ -53,6 +52,11 @@ class EntitySecurityTask extends Model
             'security_task_id' => 'integer',
             'responsabile_user_id' => 'integer',
             'attiva' => 'boolean',
+            'current_status' => 'string',
+            'days_from_last_check' => 'integer',
+            'last_check_at' => 'datetime',
+            'next_due_at' => 'datetime',
+            'last_check_result' => 'string',
         ];
     }
 
@@ -62,6 +66,7 @@ class EntitySecurityTask extends Model
             'rosso' => 3,
             'arancione' => 2,
             'verde' => 1,
+            default => 0,
         };
     }
 
@@ -90,89 +95,14 @@ class EntitySecurityTask extends Model
         return $this->hasOne(SecurityCheck::class)->latestOfMany('checked_at');
     }
 
-    public function getCurrentStatusAttribute(): string
+    public function getDaysToDeadlineAttribute(): ?int
     {
-        if (! $this->attiva) {
-            return 'nero';
-        }
-
-        if (! $this->latestCheck) {
-            return 'nero';
-        }
-
-        $esito = strtolower(trim((string) $this->latestCheck->esito));
-        if ($esito !== 'ok') {
-            return 'nero';
-        }
-
-        $task = $this->securityTask;
-
-        $period = (int) $task->periodicita_giorni;
-
-        $warningAlert = (int) ($task->warning_alert
-            ?? config('security.default_warning_alert'));
-
-        $criticalAfter = (int) ($task->critical_after
-            ?? config('security.default_critical_after'));
-
-        $daysPassed = $this->latestCheck->checked_at
-            ->startOfDay()
-            ->diffInDays(now()->startOfDay());
-
-        // 🟢 prima della soglia warning
-        if ($daysPassed < ($period - $warningAlert)) {
-            return 'verde';
-        }
-
-        // 🟠 tra warning e scadenza
-        if ($daysPassed < $period) {
-            return 'arancione';
-        }
-
-        $daysOverdue = $daysPassed - $period;
-
-        // 🔴 scaduto ma non critico
-        if ($daysOverdue < $criticalAfter) {
-            return 'rosso';
-        }
-
-        // ⚫ oltre soglia critica
-        return 'nero';
-    }
-
-
-public function getDaysToDeadlineAttribute(): ?int
-{
-    $lastCheck = $this->latestCheck?->checked_at;
-
-    if (! $lastCheck) {
-        return null;
-    }
-
-    $period = (int) ($this->securityTask->periodicita_giorni ?? 0);
-
-    if ($period <= 0) {
-        return null;
-    }
-
-    $deadline = $lastCheck->copy()
-        ->startOfDay()
-        ->addDays($period);
-
-    $today = now()->startOfDay();
-
-    return (int) $today->diffInDays($deadline, false);
-}
-
-    public function getDaysFromLastCheckAttribute(): ?int
-    {
-        if (!$this->latestCheck) {
+        if (! $this->next_due_at) {
             return null;
         }
 
-        return (int) $this->latestCheck->checked_at
+        return (int) now()
             ->startOfDay()
-            ->diffInDays(now()->startOfDay());
+            ->diffInDays($this->next_due_at->startOfDay(), false);
     }
-
 }
