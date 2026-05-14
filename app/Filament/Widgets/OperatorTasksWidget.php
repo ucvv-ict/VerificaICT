@@ -24,7 +24,7 @@ class OperatorTasksWidget extends TableWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    protected ?int $selectedEntityFilter = null;
+    public ?int $selectedEntityFilter = null;
 
     public function mount(): void
     {
