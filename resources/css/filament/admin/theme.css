@@ -3,6 +3,60 @@
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
 
+:root {
+    --ucvv-auth-bg: #edf5ef;
+    --ucvv-auth-bg-accent: #f8efe1;
+    --ucvv-auth-panel: rgba(255, 255, 255, 0.82);
+    --ucvv-auth-border: rgba(148, 163, 184, 0.22);
+    --ucvv-auth-logo: url('https://www.uc-valdarnoevaldisieve.fi.it/sites/www.uc-valdarnoevaldisieve.fi.it/files/ucvvlogo2_0.gif');
+}
+
+.fi-simple-layout {
+    position: relative;
+    isolation: isolate;
+    min-height: 100vh;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.72), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(248, 239, 225, 0.92), transparent 30%),
+        linear-gradient(135deg, var(--ucvv-auth-bg) 0%, #f4f7fb 48%, var(--ucvv-auth-bg-accent) 100%);
+}
+
+.fi-simple-layout::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background-image: var(--ucvv-auth-logo);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: min(52vw, 32rem);
+    opacity: 0.08;
+    filter: grayscale(1) saturate(0.7);
+}
+
+.fi-simple-layout::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.1));
+    backdrop-filter: blur(1px);
+}
+
+.fi-simple-main {
+    border: 1px solid var(--ucvv-auth-border);
+    border-radius: 1.25rem;
+    background: var(--ucvv-auth-panel);
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+    backdrop-filter: blur(12px);
+}
+
+.fi-simple-header-heading,
+.fi-simple-header-subheading {
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
 /* Operator dashboard row highlight */
 tr.row-critical > td {
     background: #fef2f2 !important; /* red-50 */

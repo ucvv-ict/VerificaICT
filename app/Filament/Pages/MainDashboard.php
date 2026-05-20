@@ -24,6 +24,7 @@ class MainDashboard extends Dashboard
 
         if (! $user->is_admin || request()->get('mode') === 'operator') {
             return [
+                \App\Filament\Widgets\OperatorUrgencyChartWidget::class,
                 \App\Filament\Widgets\OperatorTasksWidget::class,
             ];
         }

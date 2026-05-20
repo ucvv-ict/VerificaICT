@@ -14,6 +14,9 @@ class FirstLoginPasswordChange extends Page
     protected static ?string $slug = 'password/change';
 
     protected static bool $shouldRegisterNavigation = false;
+    protected static bool $hasNavigation = false;
+
+    protected static string $layout = 'layouts.filament-auth';
 
     protected ?string $heading = 'Cambia password al primo accesso';
 

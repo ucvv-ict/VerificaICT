@@ -8,10 +8,12 @@ use App\Filament\Resources\SecurityTaskResource\Pages\CreateSecurityTask;
 use App\Filament\Resources\SecurityTaskResource\Pages\EditSecurityTask;
 use App\Filament\Resources\SecurityTaskResource\Pages\ListSecurityTasks;
 use App\Filament\Resources\SecurityTaskResource\Pages\ViewSecurityTask;
+use App\Models\Entity;
 use App\Models\SecurityTask;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -114,6 +116,26 @@ class SecurityTaskResource extends Resource
 
                 Toggle::make('attiva')
                     ->default(true),
+
+                CheckboxList::make('entities')
+                    ->label('Enti assegnati')
+                    ->options(Entity::query()->orderBy('nome')->pluck('nome', 'id')->toArray())
+                    ->dehydrated(false)
+                    ->columns(2)
+                    ->helperText('Seleziona gli enti a cui assegnare il task al momento della creazione o della modifica.')
+                    ->afterStateHydrated(function (CheckboxList $component): void {
+                        $record = $component->getRecord();
+
+                        if (! $record instanceof \App\Models\SecurityTask) {
+                            return;
+                        }
+
+                        $component->state(
+                            $record->entitySecurityTasks()
+                                ->pluck('entity_id')
+                                ->toArray(),
+                        );
+                    }),
 
                 Select::make('tags')
                     ->relationship('tags', 'nome')
